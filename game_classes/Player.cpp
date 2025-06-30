@@ -1,6 +1,6 @@
 #include "../game_include/Player.hpp"
 
-Player::Player(GLuint objectShader, GLuint hitboxShader) : crawl(false), position(glm::vec3(-0.65f, 0.0f, 0.0f)), shader(objectShader), hitboxShader(hitboxShader), showHitbox(false)
+Player::Player(GLuint objectShader, GLuint hitboxShader) : crawl(false), position(glm::vec3(-0.65f, 0.0f, 0.0f)), shader(objectShader), hitboxShader(hitboxShader), showHitbox(false), frameCount(0)
 {
 	makeObject();
 	makeHitbox();
@@ -35,28 +35,29 @@ void Player::makeObject()
         std::cerr << "ERROR::PLAYER::TEXTURE::LOADING_FAILED\n";
     stbi_image_free(data);
 
+    // Buffers
+    GLuint vao[4], vbo[4], ebo[4];
+    glGenVertexArrays(4, vao);
+    glGenBuffers(4, vbo); glGenBuffers(4, ebo);
+
+    VAO[0] = vao[0];
+    VAO[1] = vao[1];
+    VAO[2] = vao[2];
+    VAO[3] = vao[3];
+
     unsigned int indices[] = {
     	0, 1, 2,
     	2, 3, 0
     };
 
-    // Buffers
-    GLuint vao[2], vbo[2], ebo[2];
-    glGenVertexArrays(2, vao);
-    glGenBuffers(2, vbo); glGenBuffers(2, ebo);
-
-    VAO[0] = vao[0];
-    VAO[1] = vao[1];
-
-    // Coordonnées du sprite (ex: dino dans une grande image)
-    int spriteX = 0, spriteY = 0;
-    int spriteW = 54, spriteH = 56;
-
     float uv[8];
+
+    int spriteX = 150, spriteY = 0;
+    int spriteW = 50, spriteH = 50;
+
     calculateUVs(spriteX, spriteY, spriteW, spriteH, texWidth, texHeight, uv);
 
-    // Quad avec positions + UVs calculées
-    float vertices_standing[] = {
+    float vertices_standing_1[] = {
         // positions     // UVs
         -0.10f, -0.10f,     uv[0], uv[1], // bottom left
          0.10f, -0.10f,     uv[2], uv[3], // bottom right
@@ -66,7 +67,7 @@ void Player::makeObject()
 
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_standing), vertices_standing, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_standing_1), vertices_standing_1, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
@@ -76,25 +77,79 @@ void Player::makeObject()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float))); // UV
     glEnableVertexAttribArray(1);
 
-    spriteX = 346;
-    spriteY = 7;
-    spriteW = 64;
-    spriteH = 41;
+    spriteX = 200;
+    spriteY = 0;
+    spriteW = 50;
+    spriteH = 50;
 
     calculateUVs(spriteX, spriteY, spriteW, spriteH, texWidth, texHeight, uv);
 
-    float vertices_crawling[] = {
+    float vertices_standing_2[] = {
         // positions     // UVs
         -0.10f, -0.10f,     uv[0], uv[1], // bottom left
-         0.15f, -0.10f,     uv[2], uv[3], // bottom right
-         0.15f,  0.05f,     uv[4], uv[5], // top right
-        -0.10f,  0.05f,     uv[6], uv[7]  // top left
+         0.10f, -0.10f,     uv[2], uv[3], // bottom right
+         0.10f,  0.10f,     uv[4], uv[5], // top right
+        -0.10f,  0.10f,     uv[6], uv[7]  // top left
     };
 
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_crawling), vertices_crawling, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_standing_2), vertices_standing_2, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Attributs
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0); // pos
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float))); // UV
+    glEnableVertexAttribArray(1);
+
+    spriteX = 350;
+    spriteY = 0;
+    spriteW = 55;
+    spriteH = 50;
+
+    calculateUVs(spriteX, spriteY, spriteW, spriteH, texWidth, texHeight, uv);
+
+    float vertices_crawling_1[] = {
+        // positions     // UVs
+        -0.10f, -0.10f,     uv[0], uv[1], // bottom left
+         0.15f, -0.10f,     uv[2], uv[3], // bottom right
+         0.15f,  0.10f,     uv[4], uv[5], // top right
+        -0.10f,  0.10f,     uv[6], uv[7]  // top left
+    };
+
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_crawling_1), vertices_crawling_1, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[2]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Attributs
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0); // pos
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float))); // UV
+    glEnableVertexAttribArray(1);
+
+    spriteX = 414;
+    spriteY = 0;
+    spriteW = 55;
+    spriteH = 50;
+
+    calculateUVs(spriteX, spriteY, spriteW, spriteH, texWidth, texHeight, uv);
+
+    float vertices_crawling_2[] = {
+        // positions     // UVs
+        -0.10f, -0.10f,     uv[0], uv[1], // bottom left
+         0.15f, -0.10f,     uv[2], uv[3], // bottom right
+         0.15f,  0.10f,     uv[4], uv[5], // top right
+        -0.10f,  0.10f,     uv[6], uv[7]  // top left
+    };
+
+    glBindVertexArray(VAO[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_crawling_2), vertices_crawling_2, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[3]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Attributs
@@ -176,7 +231,10 @@ void Player::render()
 	model = glm::translate(model, position);
 	glUniformMatrix4fv(positionLoc, 1, GL_FALSE, &model[0][0]);
     glBindTexture(GL_TEXTURE_2D, texture);
-	glBindVertexArray(VAO[crawl ? 1 : 0]);
+    if (crawl)
+		glBindVertexArray(VAO[(frameCount % 40 > 20) ? 2 : 3]);
+	else
+		glBindVertexArray(VAO[(frameCount % 40 > 20) ? 0 : 1]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	if (showHitbox)
 	{
@@ -186,6 +244,9 @@ void Player::render()
     	glBindVertexArray(hitbox[crawl ? 1 : 0]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
+	frameCount++;
+	if (frameCount >= 10000)
+		frameCount = 0;
 }
 
 void Player::move(movement direction, float deltaTime)

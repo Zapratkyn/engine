@@ -41,7 +41,7 @@ private:
 	glm::vec3 position;
 	GLint positionLoc;
 
-	GLuint VAO[2];
+	GLuint VAO[4];
 	GLuint shader;
 	GLuint texture;
 
@@ -51,6 +51,8 @@ private:
 	GLint hitboxColorLoc;
 
 	bool showHitbox;
+
+	unsigned int frameCount;
 
 	void makeObject();
 	void makeHitbox();
