@@ -1,5 +1,5 @@
-#ifndef __PLAYER__
-	#define __PLAYER__
+#ifndef __BIRD__
+	#define __BIRD__
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -10,31 +10,24 @@
 #include "Object.hpp"
 #include "Loader.hpp"
 
-enum movement {
-	DOWN,
-	UP,
-	JUMP
-};
-
 class Object;
 class Loader;
 
-class Player : public Object
+class Bird : public Object
 {
+
 public:
 
-	Player(Loader *loader);
+	Bird(Loader *loader);
 
 	void render(bool showHitbox) override;
-	void move(movement direction, float deltaTime);
 
 private:
 
-	bool crawl;
 	unsigned int frameCount;
 
-	GLuint VAOs[4];
-	// GLuint hitbox[2];
+	GLuint VAOs[2];
+	GLuint hitbox;
 
 };
 
