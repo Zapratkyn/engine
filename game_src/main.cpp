@@ -118,8 +118,6 @@ int main()
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        player.render(showHitbox);
-        // bird.render(showHitbox);
         for (auto it = clouds.begin(); it != clouds.end();)
         {
             (*it)->move(deltaTime);
@@ -145,6 +143,8 @@ int main()
             else
                 it++;
         }
+        player.render(showHitbox);
+        
 
         glfwSwapBuffers(window);
         glfwPollEvents();

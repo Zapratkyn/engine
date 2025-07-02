@@ -4,8 +4,8 @@ Cloud::Cloud(Loader *loader, std::uniform_int_distribution<int> &randomizer, std
 Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 2.5f)
 {
 	int random = randomizer(motor);
-	float height = random >= 50 ? 0.4f : 0.6f;
-	position = glm::vec3(1.05f, height, 0.0f);
+	// float height = random >= 50 ? 0.4f : 0.6f;
+	position = glm::vec3(1.05f, (float)random / 100, 0.0f);
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
 	VAO = vaos["cloud"];
 }
