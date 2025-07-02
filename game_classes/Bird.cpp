@@ -3,7 +3,7 @@
 Bird::Bird(Loader *loader) : 
 Object(loader)
 {
-	position = glm::vec3(-0.0f, 0.0f, 0.0f);
+	position = glm::vec3(0.0f, 0.2f, 0.0f);
 	frameCount = 0;
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
 	VAOs[0] = vaos["bird_1"];

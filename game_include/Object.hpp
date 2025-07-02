@@ -20,6 +20,8 @@ class Object
 public:
 
 	Object(Loader *loader);
+	Object(Loader *loader, glm::vec3 movement, float speed);
+	virtual ~Object() = default;
 
 	virtual void render(bool showHitbox) = 0;
 
@@ -35,6 +37,9 @@ protected:
 
 	glm::vec3 position;
 	glm::vec3 color;
+
+	glm::vec3 movement;
+	float speed;
 
 };
 

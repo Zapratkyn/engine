@@ -6,8 +6,15 @@
 // #include "../include/Camera.hpp"
 #include "../game_include/Player.hpp"
 #include "../game_include/Bird.hpp"
+#include "../game_include/Cloud.hpp"
+#include "../game_include/Landscape.hpp"
 #include "../game_include/stb_image.h"
 #include <iostream>
+#include <random>
+#include <list>
+#include <chrono>
+
+using namespace std::chrono;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, Player &player);
@@ -22,6 +29,11 @@ bool showHitbox = false;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+constexpr auto cloudTimer = seconds(1);
+
+static std::random_device rd;
+static std::mt19937 motor(rd());
+std::uniform_int_distribution<int> randomizer(0, 100);
 
 int main()
 {
@@ -73,13 +85,33 @@ int main()
 
     loader = new Loader(DINO_GAME, objectShader, hitboxShader, positionLoc, hitboxPositionLoc, hitboxColorLoc);
     Player player(loader);
-    Bird bird(loader);
+
+    std::list<Cloud*> clouds;
+    std::list<Object*> enemies;
+    std::list<Landscape*> landscape;
+    clouds.push_back(new Cloud(loader, randomizer, motor));
+    landscape.push_back(new Landscape(loader, randomizer, motor));
 
     while(!glfwWindowShouldClose(window))
     {
+        static auto lastCloud = steady_clock::now();
+        auto now = steady_clock::now();
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
+        if (now - lastCloud >= cloudTimer)
+        {
+            int random = randomizer(motor);
+            if (random == 100)
+            {
+                clouds.push_back(new Cloud(loader, randomizer, motor));
+                lastCloud = now;
+            }
+        }
+
+        if ((*landscape.rbegin())->getPosition() < 0.40f)
+            landscape.push_back(new Landscape(loader, randomizer, motor));
 
         processInput(window, player);
 
@@ -87,12 +119,41 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         player.render(showHitbox);
-        bird.render(showHitbox);
+        // bird.render(showHitbox);
+        for (auto it = clouds.begin(); it != clouds.end();)
+        {
+            (*it)->move(deltaTime);
+            (*it)->render(showHitbox);
+            if ((*it)->getPosition() < -1.5f)
+            {
+                delete *it;
+                it = clouds.erase(it);
+            }
+            else
+                it++;
+        }
+
+        for (auto it = landscape.begin(); it != landscape.end();)
+        {
+            (*it)->move(deltaTime);
+            (*it)->render(showHitbox);
+            if ((*it)->getPosition() < -2.0f)
+            {
+                delete *it;
+                it = landscape.erase(it);
+            }
+            else
+                it++;
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    for (auto it = clouds.begin(); it != clouds.end(); it++)
+        delete *it;
+    for (auto it = landscape.begin(); it != landscape.end(); it++)
+        delete *it;
     delete loader;
 
     glfwTerminate();
@@ -107,6 +168,8 @@ void processInput(GLFWwindow *window, Player &player)
         player.move(DOWN, deltaTime);
     else
         player.move(UP, deltaTime);
+    // if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    //     land.move(deltaTime);
     // if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !showHitbox)
     //     showHitbox = true;
     // else if (glfwGetKey(window, GLFW_KEY_H) != GLFW_PRESS && showHitbox)

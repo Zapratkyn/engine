@@ -1,5 +1,5 @@
-#ifndef __PLAYER__
-	#define __PLAYER__
+#ifndef __CLOUD__
+	#define __CLOUD__
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -9,32 +9,25 @@
 #include "stb_image.h"
 #include "Object.hpp"
 #include "Loader.hpp"
-
-enum direction {
-	DOWN,
-	UP,
-	JUMP
-};
+#include <random>
 
 class Object;
 class Loader;
 
-class Player : public Object
+class Cloud : public Object
 {
+
 public:
 
-	Player(Loader *loader);
+	Cloud(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
 
 	void render(bool showHitbox) override;
-	void move(direction direction, float deltaTime);
+	void move(float deltaTime);
+	float getPosition();
 
 private:
 
-	bool crawl;
-	unsigned int frameCount;
-
-	GLuint VAOs[4];
-	// GLuint hitbox[2];
+	GLuint VAO;
 
 };
 

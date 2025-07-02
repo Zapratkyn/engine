@@ -41,7 +41,7 @@ void Player::render(bool showHitbox)
 		frameCount = 0;
 }
 
-void Player::move(movement direction, float deltaTime)
+void Player::move(direction direction, float deltaTime)
 {
 	(void)deltaTime;
 	// float velocity = 2.5f * deltaTime;
