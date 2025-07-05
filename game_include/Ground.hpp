@@ -14,15 +14,14 @@
 class Object;
 class Loader;
 
-class Landscape : public Object
+class Ground : public Object
 {
 public:
 
-	Landscape(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
+	Ground(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
 
 	void render(bool showHitbox) override;
-	void move(float deltaTime);
-	float getPosition();
+	void update(float deltaTime) override;
 
 private:
 

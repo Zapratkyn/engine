@@ -1,19 +1,20 @@
 #include "../game_include/Loader.hpp"
 
-Loader::Loader(Scene scene, GLuint objectShader, GLuint hitboxShader, GLint positionLoc, GLint hitboxPositionLoc, GLint hitboxColorLoc) :
+Loader::Loader(Scene scene, GLuint objectShader, GLuint hitboxShader, GLint positionLoc, GLint hitboxPositionLoc) :
 objectShader(objectShader),
 hitboxShader(hitboxShader),
 positionLoc(positionLoc),
-hitboxPositionLoc(hitboxPositionLoc),
-hitboxColorLoc(hitboxColorLoc)
+hitboxPositionLoc(hitboxPositionLoc)
 {
     std::map<std::string, std::vector<int>> coords;
     std::map<std::string, std::vector<float>> positions;
-    getSceneData(scene, &coords, &positions);
-	// data = getSceneData(scene);
+    std::map<std::string, std::vector<float>> hitboxes;
+    getSceneData(scene, &coords, &positions, &hitboxes);
 	loadAssets(getAssetsPath(scene).c_str());
-	for (std::map<std::string, std::vector<int>>::iterator it = coords.begin(); it != coords.end(); it++)
+	for (auto it = coords.begin(); it != coords.end(); it++)
 		makeObject(it->first, it->second, positions);
+    for (auto it = hitboxes.begin(); it != hitboxes.end(); it++)
+        makeHitbox(it->first, it->second);
 }
 
 Loader::~Loader()
@@ -74,8 +75,8 @@ void Loader::makeObject(std::string name, std::vector<int> &coords, std::map<std
         // positions                            // UVs
         0.0f,               0.0f,               uv[0], uv[1], // bottom left
         positions[name][0], 0.0f,               uv[2], uv[3], // bottom right
-        positions[name][1], positions[name][2], uv[4], uv[5], // top right
-        0.0f,               positions[name][3], uv[6], uv[7]  // top left
+        positions[name][0], positions[name][1], uv[4], uv[5], // top right
+        0.0f,               positions[name][1], uv[6], uv[7]  // top left
     };
 
 	glBindVertexArray(VAO);
@@ -93,6 +94,41 @@ void Loader::makeObject(std::string name, std::vector<int> &coords, std::map<std
     VBOs.push_back(VBO);
     EBOs.push_back(EBO);
     VAOs[name] = VAO;
+}
+
+void Loader::makeHitbox(std::string name, std::vector<float> &data)
+{
+    GLuint VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO); glGenBuffers(1, &EBO);
+
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+    float vertices[] = {
+        // positions            // colors
+        0.0f,       0.0f,       data[2], data[3], data[4], // bottom left
+        data[0],    0.0f,       data[2], data[3], data[4], // bottom right
+        data[0],    data[1],    data[2], data[3], data[4], // top right
+        0.0f,       data[1],    data[2], data[3], data[4]  // top left
+    };
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);    
+
+    // Attributs
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // pos
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float))); // color
+    glEnableVertexAttribArray(1);
+
+    VBOs.push_back(VBO);
+    EBOs.push_back(EBO);
+    hitboxes[name] = VAO;
 }
 
 void Loader::calculateUVs(int x, int y, int w, int h, float uv[8]) {
@@ -113,6 +149,6 @@ GLuint Loader::getHitboxShader() const { return hitboxShader; }
 GLuint Loader::getAssets() const { return assets; }
 GLint Loader::getPositionLoc() const { return positionLoc; }
 GLint Loader::getHitboxPositionLoc() const { return hitboxPositionLoc; }
-GLint Loader::getHitboxColorLoc() const { return hitboxColorLoc; }
 
 std::map<std::string, GLuint> Loader::getVAOs() const { return VAOs; }
+std::map<std::string, GLuint> Loader::getHitboxes() const { return hitboxes; }

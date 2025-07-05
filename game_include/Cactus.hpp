@@ -1,5 +1,5 @@
-#ifndef __CLOUD__
-	#define __CLOUD__
+#ifndef __CACTUS__
+	#define __CACTUS__
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -14,12 +14,12 @@
 class Object;
 class Loader;
 
-class Cloud : public Object
+class Cactus : public Object
 {
 
 public:
 
-	Cloud(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
+	Cactus(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
 
 	void render(bool showHitbox) override;
 	void update(float deltaTime) override;
@@ -27,6 +27,7 @@ public:
 private:
 
 	GLuint VAO;
+	GLuint hitbox;
 
 };
 

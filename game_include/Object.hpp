@@ -24,6 +24,8 @@ public:
 	virtual ~Object() = default;
 
 	virtual void render(bool showHitbox) = 0;
+	virtual void update(float deltaTime) = 0;
+	float getPosition();
 
 protected:
 
@@ -33,10 +35,8 @@ protected:
 
 	GLint positionLoc;
 	GLint hitboxPositionLoc;
-	GLint hitboxColorLoc;
 
 	glm::vec3 position;
-	glm::vec3 color;
 
 	glm::vec3 movement;
 	float speed;

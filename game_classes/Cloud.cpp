@@ -24,10 +24,8 @@ void Cloud::render(bool showHitbox)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Cloud::move(float deltaTime)
+void Cloud::update(float deltaTime)
 {
 	float velocity = speed * deltaTime;
 	position += movement * velocity;
 }
-
-float Cloud::getPosition() { return position.x; }

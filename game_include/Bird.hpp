@@ -9,6 +9,7 @@
 #include "stb_image.h"
 #include "Object.hpp"
 #include "Loader.hpp"
+#include <random>
 
 class Object;
 class Loader;
@@ -18,9 +19,10 @@ class Bird : public Object
 
 public:
 
-	Bird(Loader *loader);
+	Bird(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
 
 	void render(bool showHitbox) override;
+	void update(float deltaTime) override;
 
 private:
 

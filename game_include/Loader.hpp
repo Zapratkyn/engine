@@ -18,7 +18,7 @@ class Loader
 
 public:
 
-	Loader(Scene scene, GLuint objectShader, GLuint hitboxShader, GLint positionLoc, GLint hitboxPositionLoc, GLint hitboxColorLoc);
+	Loader(Scene scene, GLuint objectShader, GLuint hitboxShader, GLint positionLoc, GLint hitboxPositionLoc);
 	~Loader();
 
 	GLuint getObjectShader() const;
@@ -26,14 +26,14 @@ public:
 	GLuint getAssets() const;
 	GLint getPositionLoc() const;
 	GLint getHitboxPositionLoc() const;
-	GLint getHitboxColorLoc() const;
 
 	std::map<std::string, GLuint> getVAOs() const;
+	std::map<std::string, GLuint> getHitboxes() const;
 
 private:
 
-	// std::map<std::string, std::vector<int>> data;
 	std::map<std::string, GLuint> VAOs;
+	std::map<std::string, GLuint> hitboxes;
 	std::vector<GLuint> VBOs;
 	std::vector<GLuint> EBOs;
 
@@ -42,7 +42,6 @@ private:
 
 	GLint positionLoc;
 	GLint hitboxPositionLoc;
-	GLint hitboxColorLoc;
 
 	int texWidth;
 	int texHeight;
@@ -50,6 +49,7 @@ private:
 
 	void loadAssets(const char *assetsPath);
 	void makeObject(std::string name, std::vector<int> &coords, std::map<std::string, std::vector<float>> &positions);
+	void makeHitbox(std::string name, std::vector<float> &data);
 	void calculateUVs(int x, int y, int w, int h, float uv[8]);
 
 

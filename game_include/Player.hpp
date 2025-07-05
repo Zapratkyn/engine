@@ -26,6 +26,7 @@ public:
 	Player(Loader *loader);
 
 	void render(bool showHitbox) override;
+	void update(float deltaTime) override;
 	void move(direction direction, float deltaTime);
 
 private:
@@ -34,7 +35,9 @@ private:
 	unsigned int frameCount;
 
 	GLuint VAOs[4];
-	// GLuint hitbox[2];
+	GLuint hitbox[2];
+
+	void makeHitboxes();
 
 };
 

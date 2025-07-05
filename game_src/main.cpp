@@ -3,11 +3,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-// #include "../include/Camera.hpp"
 #include "../game_include/Player.hpp"
 #include "../game_include/Bird.hpp"
+#include "../game_include/Cactus.hpp"
 #include "../game_include/Cloud.hpp"
-#include "../game_include/Landscape.hpp"
+#include "../game_include/Ground.hpp"
 #include "../game_include/stb_image.h"
 #include <iostream>
 #include <random>
@@ -20,6 +20,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, Player &player);
 void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType);
 void checkCompileErrors(unsigned int shader, std::string type, const char *subType);
+void generateCloud(std::list<Object*> &clouds, Loader *loader);
+void generateGround(std::list<Object*> &ground, Loader *loader);
+void generateEnemy(std::list<Object*> &enemies, Loader *loader);
+void render(std::list<Object*> &list);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -29,7 +33,6 @@ bool showHitbox = false;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-constexpr auto cloudTimer = seconds(1);
 
 static std::random_device rd;
 static std::mt19937 motor(rd());
@@ -70,7 +73,7 @@ int main()
     glDisable(GL_DEPTH_TEST);
 
     GLuint objectShader, hitboxShader; 
-    GLint positionLoc, hitboxPositionLoc, hitboxColorLoc;
+    GLint positionLoc, hitboxPositionLoc;
 
     // Make the shaders
     makeShader("game_shaders/object_shader.vs", "game_shaders/object_shader.fs", &objectShader, "OBJECT");
@@ -79,70 +82,38 @@ int main()
     // Keep track of uniform variables in the shader programs
     positionLoc = glGetUniformLocation(objectShader, "position");
     hitboxPositionLoc = glGetUniformLocation(hitboxShader, "position");
-    hitboxColorLoc = glGetUniformLocation(hitboxShader, "Color");
 
+    // An object to keep track of all VAOs used to create other objects in the scene
     Loader *loader;
-
-    loader = new Loader(DINO_GAME, objectShader, hitboxShader, positionLoc, hitboxPositionLoc, hitboxColorLoc);
+    loader = new Loader(DINO_GAME, objectShader, hitboxShader, positionLoc, hitboxPositionLoc);
+    
     Player player(loader);
-
-    std::list<Cloud*> clouds;
+    std::list<Object*> clouds;
+    std::list<Object*> ground;
     std::list<Object*> enemies;
-    std::list<Landscape*> landscape;
+
+    // Generate a first cloud and a first ground
     clouds.push_back(new Cloud(loader, randomizer, motor));
-    landscape.push_back(new Landscape(loader, randomizer, motor));
+    ground.push_back(new Ground(loader, randomizer, motor));
 
     while(!glfwWindowShouldClose(window))
     {
-        static auto lastCloud = steady_clock::now();
-        auto now = steady_clock::now();
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        if (now - lastCloud >= cloudTimer)
-        {
-            int random = randomizer(motor);
-            if (random == 100)
-            {
-                clouds.push_back(new Cloud(loader, randomizer, motor));
-                lastCloud = now;
-            }
-        }
-
-        if ((*landscape.rbegin())->getPosition() < 0.40f)
-            landscape.push_back(new Landscape(loader, randomizer, motor));
+        generateCloud(clouds, loader);
+        generateGround(ground, loader);
+        generateEnemy(enemies, loader);
 
         processInput(window, player);
 
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        for (auto it = clouds.begin(); it != clouds.end();)
-        {
-            (*it)->move(deltaTime);
-            (*it)->render(showHitbox);
-            if ((*it)->getPosition() < -1.5f)
-            {
-                delete *it;
-                it = clouds.erase(it);
-            }
-            else
-                it++;
-        }
-
-        for (auto it = landscape.begin(); it != landscape.end();)
-        {
-            (*it)->move(deltaTime);
-            (*it)->render(showHitbox);
-            if ((*it)->getPosition() < -2.0f)
-            {
-                delete *it;
-                it = landscape.erase(it);
-            }
-            else
-                it++;
-        }
+        render(clouds);
+        render(ground);
+        render(enemies);
         player.render(showHitbox);
         
 
@@ -150,9 +121,12 @@ int main()
         glfwPollEvents();
     }
 
+    // Delete all remaining clouds, ground pieces and enemies
     for (auto it = clouds.begin(); it != clouds.end(); it++)
         delete *it;
-    for (auto it = landscape.begin(); it != landscape.end(); it++)
+    for (auto it = ground.begin(); it != ground.end(); it++)
+        delete *it;
+    for (auto it = enemies.begin(); it != enemies.end(); it++)
         delete *it;
     delete loader;
 
@@ -168,12 +142,12 @@ void processInput(GLFWwindow *window, Player &player)
         player.move(DOWN, deltaTime);
     else
         player.move(UP, deltaTime);
-    // if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    //     land.move(deltaTime);
-    // if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !showHitbox)
-    //     showHitbox = true;
-    // else if (glfwGetKey(window, GLFW_KEY_H) != GLFW_PRESS && showHitbox)
-    //     showHitbox = false;
+
+    // TESTING ONLY : Display hitboxes for player and enemies
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !showHitbox)
+        showHitbox = true;
+    else if (glfwGetKey(window, GLFW_KEY_H) != GLFW_PRESS && showHitbox)
+        showHitbox = false;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -259,5 +233,62 @@ void checkCompileErrors(unsigned int shader, std::string type, const char *subTy
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
             std::cout << "ERROR::" << subType << "::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
+    }
+}
+
+void generateCloud(std::list<Object*> &clouds, Loader *loader)
+{
+    // When last cloud reach a certain point in the scene, try to generate a new cloud
+    if (!clouds.size() || (*clouds.rbegin())->getPosition() < 0.40f)
+    {
+        // 1% chace of generating a new cloud each frame
+        int random = randomizer(motor);
+        if (random >= 99)
+        clouds.push_back(new Cloud(loader, randomizer, motor));
+    }
+}
+
+void generateGround(std::list<Object*> &ground, Loader *loader)
+{
+    // When last ground piece reach a certain point in the scene, generate a new ground piece
+    if ((*ground.rbegin())->getPosition() < 0.40f)
+        ground.push_back(new Ground(loader, randomizer, motor));
+}
+
+void generateEnemy(std::list<Object*> &enemies, Loader *loader)
+{
+    if (!enemies.size() || (*enemies.rbegin())->getPosition() < 0.40f)
+    {
+        // 1% chace of generating a new enemy each frame
+        int random = randomizer(motor);
+        if (random >= 99)
+        {
+            Object *enemy;
+            random = randomizer(motor);
+            if (random > 50)
+                enemy = new Bird(loader, randomizer, motor);
+            else
+                enemy = new Cactus(loader, randomizer, motor);
+            enemies.push_back(enemy);
+        }
+    }
+}
+
+void render(std::list<Object*> &list)
+{
+    for (auto it = list.begin(); it != list.end();)
+    {
+        // Move and render the objects
+        (*it)->update(deltaTime);
+        (*it)->render(showHitbox);
+
+        // If an object leaves the visible scene, delete it
+        if ((*it)->getPosition() < -2.0f)
+        {
+            delete *it;
+            it = list.erase(it);
+        }
+        else
+            it++;
     }
 }

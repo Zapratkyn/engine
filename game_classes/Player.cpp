@@ -11,13 +11,13 @@ Object(loader)
 	VAOs[1] = vaos["dino_standing_2"];
 	VAOs[2] = vaos["dino_crawling_1"];
 	VAOs[3] = vaos["dino_crawling_2"];
-	// hitbox[0] = dino_data.hitbox_standing;
-	// hitbox[1] = dino_data.hitbox_crawling;
+	std::map<std::string, GLuint> hitboxes = loader->getHitboxes();
+	hitbox[0] = hitboxes["dino_standing"];
+	hitbox[1] = hitboxes["dino_crawling"];
 }
 
 void Player::render(bool showHitbox)
 {
-	(void)showHitbox;
 	glUseProgram(objectShader);
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
@@ -28,14 +28,11 @@ void Player::render(bool showHitbox)
 	else
 		glBindVertexArray(VAOs[(frameCount % 40 > 20) ? 0 : 1]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	// glUseProgram(hitboxShader);
-    // glUniformMatrix4fv(positionLoc, 1, GL_FALSE, &model[0][0]);
-   	// glBindVertexArray(hitbox[crawl ? 1 : 0]);
-	// if (showHitbox)
-	// {
-    // 	glUniform4f(hitboxColorLoc, 0.0f, 0.0f, 1.0f, 0.3f);
-	// 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	// }
+	glUseProgram(hitboxShader);
+    glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
+   	glBindVertexArray(hitbox[crawl ? 1 : 0]);
+	if (showHitbox)
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	frameCount++;
 	if (frameCount >= 10000)
 		frameCount = 0;
@@ -49,4 +46,9 @@ void Player::move(direction direction, float deltaTime)
 		crawl = true;
 	else if (direction == UP && crawl)
 		crawl = false;
+}
+
+void Player::update(float deltaTime)
+{
+	(void)deltaTime;
 }

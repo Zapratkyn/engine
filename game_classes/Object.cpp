@@ -5,8 +5,7 @@ objectShader(loader->getObjectShader()),
 hitboxShader(loader->getHitboxShader()),
 assets(loader->getAssets()),
 positionLoc(loader->getPositionLoc()),
-hitboxPositionLoc(loader->getHitboxPositionLoc()),
-hitboxColorLoc(loader->getHitboxColorLoc())
+hitboxPositionLoc(loader->getHitboxPositionLoc())
 {}
 
 Object::Object(Loader *loader, glm::vec3 movement, float speed) : 
@@ -15,7 +14,8 @@ hitboxShader(loader->getHitboxShader()),
 assets(loader->getAssets()),
 positionLoc(loader->getPositionLoc()),
 hitboxPositionLoc(loader->getHitboxPositionLoc()),
-hitboxColorLoc(loader->getHitboxColorLoc()),
 movement(movement),
 speed(speed)
 {}
+
+float Object::getPosition() { return position.x; }

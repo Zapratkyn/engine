@@ -10,7 +10,7 @@ enum Scene
 	DINO_GAME
 };
 
-void getSceneData(Scene scene, std::map<std::string, std::vector<int>> *coords, std::map<std::string, std::vector<float>> *positions);
+void getSceneData(Scene scene, std::map<std::string, std::vector<int>> *coords, std::map<std::string, std::vector<float>> *positions, std::map<std::string, std::vector<float>> *hitboxes);
 std::string getAssetsPath(Scene scene);
 
 #endif
