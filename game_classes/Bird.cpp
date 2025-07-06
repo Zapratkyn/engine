@@ -1,7 +1,7 @@
 #include "../game_include/Bird.hpp"
 
 Bird::Bird(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor) : 
-Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 9.0f)
+Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 10.0f)
 {
 	int random = randomizer(motor);
 	position = glm::vec3(1.05f, (random >= 50 ? 0.13f : 0.25f), 0.0f);

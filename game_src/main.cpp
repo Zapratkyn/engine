@@ -114,6 +114,7 @@ int main()
         render(clouds);
         render(ground);
         render(enemies);
+        player.update(deltaTime);
         player.render(showHitbox);
         
 
@@ -139,9 +140,12 @@ void processInput(GLFWwindow *window, Player &player)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        player.move(DOWN, deltaTime);
+        player.move(CROUCH);
     else
-        player.move(UP, deltaTime);
+        player.move(STAND);
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        player.move(JUMP);
 
     // TESTING ONLY : Display hitboxes for player and enemies
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !showHitbox)

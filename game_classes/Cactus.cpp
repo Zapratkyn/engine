@@ -1,7 +1,7 @@
 #include "../game_include/Cactus.hpp"
 
 Cactus::Cactus(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor) : 
-Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 10.0f)
+Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 12.0f)
 {
 	int random = randomizer(motor);
 	std::string type;

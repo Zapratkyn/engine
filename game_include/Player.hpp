@@ -11,8 +11,8 @@
 #include "Loader.hpp"
 
 enum direction {
-	DOWN,
-	UP,
+	CROUCH,
+	STAND,
 	JUMP
 };
 
@@ -27,14 +27,20 @@ public:
 
 	void render(bool showHitbox) override;
 	void update(float deltaTime) override;
-	void move(direction direction, float deltaTime);
+	void move(direction direction);
 
 private:
 
 	bool crawl;
+
+	bool jumping;
+	float jump_velocity;
+	float speedY;
+	float gravity;
+	
 	unsigned int frameCount;
 
-	GLuint VAOs[4];
+	GLuint VAOs[5];
 	GLuint hitbox[2];
 
 	void makeHitboxes();
