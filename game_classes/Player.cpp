@@ -31,7 +31,7 @@ void Player::render(bool showHitbox)
     if (crawl)
 		glBindVertexArray(VAOs[(frameCount % 40 > 20) ? 2 : 3]);
 	else
-		glBindVertexArray(VAOs[(frameCount % 40 > 20) ? 0 : 1]);
+		glBindVertexArray(VAOs[(frameCount % 40 > 20 || jumping) ? 0 : 1]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glUseProgram(hitboxShader);
     glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
@@ -49,7 +49,7 @@ void Player::move(direction direction)
 		crawl = true;
 	else if (direction == STAND && crawl)
 		crawl = false;
-	else if (direction == JUMP && !jumping)
+	else if (direction == JUMP && !jumping && !crawl)
 	{
 		speedY = jump_velocity;
 		jumping = true;
