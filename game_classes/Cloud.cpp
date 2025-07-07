@@ -3,6 +3,7 @@
 Cloud::Cloud(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor) : 
 Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 2.5f)
 {
+	// Use randomizer to determine altitude, anywhere between right above the ground to almost touching the upper side of the screen
 	int random = randomizer(motor);
 	float height = (float)random / 100;
 	if (height < 0.1f)
@@ -26,6 +27,7 @@ void Cloud::render(bool showHitbox)
 
 void Cloud::update(float deltaTime)
 {
+	// Use the speed to make them move from right to left
 	float velocity = speed * deltaTime;
 	position += movement * velocity;
 }

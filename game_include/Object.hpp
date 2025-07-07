@@ -34,6 +34,8 @@ protected:
 	GLuint hitboxShader;
 	GLuint assets;
 
+	GLuint VAO;
+
 	GLint positionLoc;
 	GLint hitboxPositionLoc;
 

@@ -16,10 +16,14 @@
 
 using namespace std::chrono;
 
+// A function to resize objects when resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 void processInput(GLFWwindow *window, Player &player);
+
 void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType);
 void checkCompileErrors(unsigned int shader, std::string type, const char *subType);
+
 void generateCloud(std::list<Object*> &clouds, Loader *loader);
 void generateGround(std::list<Object*> &ground, Loader *loader);
 void generateEnemy(std::list<Object*> &enemies, Loader *loader);
@@ -76,6 +80,7 @@ int main()
     GLint positionLoc, hitboxPositionLoc;
 
     // Make the shaders
+    // Hitbox shader is there only for testing. It displays the hitboxes, blue for the player, red for the enemies
     makeShader("game_shaders/object_shader.vs", "game_shaders/object_shader.fs", &objectShader, "OBJECT");
     makeShader("game_shaders/hitbox_shader.vs", "game_shaders/hitbox_shader.fs", &hitboxShader, "HITBOX");
 
@@ -137,13 +142,17 @@ int main()
 
 void processInput(GLFWwindow *window, Player &player)
 {
+    // Quit game, free resources and close the window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    // Toggle crouching
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
         player.move(CROUCH);
     else
         player.move(STAND);
 
+    // Jump
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         player.move(JUMP);
 
@@ -248,7 +257,7 @@ void generateCloud(std::list<Object*> &clouds, Loader *loader)
         // 1% chace of generating a new cloud each frame
         int random = randomizer(motor);
         if (random >= 99)
-        clouds.push_back(new Cloud(loader, randomizer, motor));
+            clouds.push_back(new Cloud(loader, randomizer, motor));
     }
 }
 

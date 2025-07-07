@@ -51,8 +51,6 @@ private:
 	GLuint hitbox[2];
 	glm::vec3 hitboxPosition[2];
 
-	void makeHitboxes();
-
 };
 
 #endif

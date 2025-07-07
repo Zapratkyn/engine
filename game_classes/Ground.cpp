@@ -5,6 +5,8 @@ Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 10.0f)
 {
 	position = glm::vec3(1.05f, 0.0f, 0.0f);
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
+
+	// Use randomizer to chose between 3 sprites
 	int random = randomizer(motor);
 	if (random <= 33)
 		VAO = vaos["landscape_1"];
@@ -28,6 +30,7 @@ void Ground::render(bool showHitbox)
 
 void Ground::update(float deltaTime)
 {
+	// Use the speed to make them move from right to left
 	float velocity = speed * deltaTime;
 	position += movement * velocity;
 }

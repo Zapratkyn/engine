@@ -3,6 +3,7 @@
 Bird::Bird(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor) : 
 Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 10.5f)
 {
+	// Use randomizer to determine the bird's altitude (between 2 options, one forcing the dino to crouch)
 	int random = randomizer(motor);
 	position = glm::vec3(1.05f, (random >= 50 ? 0.13f : 0.25f), 0.0f);
 	frameCount = 0;
@@ -38,6 +39,7 @@ void Bird::render(bool showHitbox)
 
 void Bird::update(float deltaTime)
 {
+	// Use the speed to make them move from right to left
 	float velocity = speed * deltaTime;
 	position += movement * velocity;
 }

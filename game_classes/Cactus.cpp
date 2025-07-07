@@ -3,6 +3,7 @@
 Cactus::Cactus(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor) : 
 Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 12.5f)
 {
+	// Use the randomizer to chose among the 6 different cactus models and set the width and height of the chosen model
 	int random = randomizer(motor);
 	std::string type;
 	if (random < 16)
@@ -39,7 +40,10 @@ Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 12.5f)
 		height = 0.1f;
 	else
 		height = 0.2f;
+
+	// The started on the right end of the screen, sligthly out of range, to appear already generated
 	position = glm::vec3(1.05f, 0.0f, 0.0f);
+
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
 	VAO = vaos[type];
 	std::map<std::string, GLuint> hitboxes = loader->getHitboxes();
@@ -66,6 +70,7 @@ void Cactus::render(bool showHitbox)
 
 void Cactus::update(float deltaTime)
 {
+	// Use the speed to make them move from right to left
 	float velocity = speed * deltaTime;
 	position += movement * velocity;
 }

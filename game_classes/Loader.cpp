@@ -6,9 +6,16 @@ hitboxShader(hitboxShader),
 positionLoc(positionLoc),
 hitboxPositionLoc(hitboxPositionLoc)
 {
+    // Where to find the sprites in the png
     std::map<std::string, std::vector<int>> coords;
+
+    // Vertices positions of the sprites, used to give them a size on the screen
     std::map<std::string, std::vector<float>> positions;
+
+    // Vertices and color of the hitboxes
     std::map<std::string, std::vector<float>> hitboxes;
+
+    
     getSceneData(scene, &coords, &positions, &hitboxes);
 	loadAssets(getAssetsPath(scene).c_str());
 	for (auto it = coords.begin(); it != coords.end(); it++)

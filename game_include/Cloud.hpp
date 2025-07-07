@@ -24,10 +24,6 @@ public:
 	void render(bool showHitbox) override;
 	void update(float deltaTime) override;
 
-private:
-
-	GLuint VAO;
-
 };
 
 #endif
