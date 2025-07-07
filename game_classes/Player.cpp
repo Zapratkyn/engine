@@ -9,10 +9,10 @@ Object(loader)
 	// Double hitbox for the standing sprite
 	// The second one slightly translated from the first, to give them a Z-ish shape, like the dino
 	hitboxPosition[0] = position;
-	hitboxPosition[1] = position + glm::vec3(0.05f, 0.1f, 0.0f);
+	hitboxPosition[1] = position + glm::vec3(0.09f, 0.1f, 0.0f);
 	crawl = false;
 	jumping = false;
-	dead = false;
+	isDead = false;
 	// Those are used for the jump physics
 	jump_velocity = 3.0f;
 	speedY = 0.0f;
@@ -23,6 +23,7 @@ Object(loader)
 
 	// Hitboxes sizes, to detect collision
 	width = 0.15f;
+	width2 = 0.11f;
 	height = 0.1f;
 	height_crawling = 0.12f;
 	width_crawling = 0.2f;
@@ -37,8 +38,9 @@ Object(loader)
 
 	// The hitboxes as displayed on the screen (blue rectangles)
 	std::map<std::string, GLuint> hitboxes = loader->getHitboxes();
-	hitbox[0] = hitboxes["dino_standing"];
-	hitbox[1] = hitboxes["dino_crawling"];
+	hitbox[0] = hitboxes["dino_standing_1"];
+	hitbox[1] = hitboxes["dino_standing_2"];
+	hitbox[2] = hitboxes["dino_crawling"];
 }
 
 void Player::render(bool showHitbox)
@@ -49,7 +51,7 @@ void Player::render(bool showHitbox)
 	model = glm::translate(model, position);
 	glUniformMatrix4fv(positionLoc, 1, GL_FALSE, &model[0][0]);
     glBindTexture(GL_TEXTURE_2D, assets);
-    if (dead)
+    if (isDead)
     	glBindVertexArray(VAOs[4]);
     else
     {
@@ -65,7 +67,7 @@ void Player::render(bool showHitbox)
 		glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
 		if (crawl)
 		{
-			glBindVertexArray(hitbox[1]);
+			glBindVertexArray(hitbox[2]);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 		else
@@ -77,7 +79,8 @@ void Player::render(bool showHitbox)
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 			// Translate to the second rectangle's position, relative to the dino sprite
-			model = glm::translate(model, glm::vec3(0.05f, 0.1f, 0.0f));
+			glBindVertexArray(hitbox[1]);
+			model = glm::translate(model, glm::vec3(0.09f, 0.1f, 0.0f));
 			glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
 
 			// Draw the upper rectangle
@@ -106,7 +109,7 @@ void Player::move(direction direction)
 
 void Player::update(float deltaTime) { (void)deltaTime; }
 
-void Player::update(std::list<Object*> &enemies, float deltaTime)
+void Player::update(std::list<Object*> &enemies, float deltaTime, bool &dead)
 {
 	if (jumping)
 	{
@@ -122,7 +125,7 @@ void Player::update(std::list<Object*> &enemies, float deltaTime)
 		{
 			position = glm::vec3(-0.75f, 0.0f, 0.0f);
 			hitboxPosition[0] = position;
-			hitboxPosition[1] = position + glm::vec3(0.05f, 0.1f, 0.0f);
+			hitboxPosition[1] = position + glm::vec3(0.09f, 0.1f, 0.0f);
 			speedY = 0.0f;
 			jumping = false;
 		}
@@ -132,7 +135,7 @@ void Player::update(std::list<Object*> &enemies, float deltaTime)
 	glm::vec3 max1 = glm::vec3(hitboxPosition[0].x + (crawl ? width_crawling : width), hitboxPosition[0].y + (crawl ? height_crawling : height), 0.0f);
 
 	// Finding the upper right corner of the upper hitbox (always, only used if standing)
-	glm::vec3 max2 = glm::vec3(hitboxPosition[1].x + width, hitboxPosition[1].y + height, 0.0f);
+	glm::vec3 max2 = glm::vec3(hitboxPosition[1].x + width2, hitboxPosition[1].y + height, 0.0f);
 
 	// Bottom left corners are already known as hitboxPosition[0] and hitboxPosition[1]
 
@@ -145,12 +148,14 @@ void Player::update(std::list<Object*> &enemies, float deltaTime)
 		// Check if the lower hitbox (while standing) or the only hitbox (while crawling) hits the enemy
 		if ((hitboxPosition[0].x <= enemy_max.x && max1.x >= enemy_min.x) && (hitboxPosition[0].y <= enemy_max.y && max1.y >= enemy_min.y))
 		{
+			isDead = true;
 			dead = true;
 			break;
 		}
 		// If standing, check if the upper hitbox hits the enemy
 		if (!crawl && (hitboxPosition[1].x <= enemy_max.x && max2.x >= enemy_min.x) && (hitboxPosition[1].y <= enemy_max.y && max2.y >= enemy_min.y))
 		{
+			isDead = true;
 			dead = true;
 			break;
 		}
@@ -161,4 +166,14 @@ void Player::update(std::list<Object*> &enemies, float deltaTime)
 	}
 }
 
-bool Player::getDead() const { return dead; }
+void Player::restart()
+{
+	position = glm::vec3(-0.75f, 0.0f, 0.0f);
+	hitboxPosition[0] = position;
+	hitboxPosition[1] = position + glm::vec3(0.05f, 0.1f, 0.0f);
+	crawl = false;
+	jumping = false;
+	isDead = false;
+	speedY = 0.0f;
+	frameCount = 0;
+}

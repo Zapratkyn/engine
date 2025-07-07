@@ -27,14 +27,15 @@ public:
 	Player(Loader *loader);
 
 	void render(bool showHitbox) override;
-	void update(std::list<Object*> &enemies, float deltaTime);
+	void update(std::list<Object*> &enemies, float deltaTime, bool &dead);
 	void update(float deltaTime) override;
 	void move(direction direction);
-	bool getDead() const;
+	void restart();
 
 private:
 
 	bool crawl;
+	float width2;
 	float height_crawling;
 	float width_crawling;
 
@@ -43,12 +44,12 @@ private:
 	float speedY;
 	float gravity;
 
-	bool dead;
+	bool isDead;
 	
 	unsigned int frameCount;
 
 	GLuint VAOs[5];
-	GLuint hitbox[2];
+	GLuint hitbox[3];
 	glm::vec3 hitboxPosition[2];
 
 };

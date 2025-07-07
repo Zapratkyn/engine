@@ -19,7 +19,7 @@ using namespace std::chrono;
 // A function to resize objects when resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-void processInput(GLFWwindow *window, Player &player);
+void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemies, bool &dead);
 
 void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType);
 void checkCompileErrors(unsigned int shader, std::string type, const char *subType);
@@ -27,7 +27,7 @@ void checkCompileErrors(unsigned int shader, std::string type, const char *subTy
 void generateCloud(std::list<Object*> &clouds, Loader *loader);
 void generateGround(std::list<Object*> &ground, Loader *loader);
 void generateEnemy(std::list<Object*> &enemies, Loader *loader);
-void render(std::list<Object*> &list);
+void render(std::list<Object*> &list, bool &dead);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -101,25 +101,31 @@ int main()
     clouds.push_back(new Cloud(loader, randomizer, motor));
     ground.push_back(new Ground(loader, randomizer, motor));
 
+    bool dead;
+
     while(!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        generateCloud(clouds, loader);
-        generateGround(ground, loader);
-        generateEnemy(enemies, loader);
+        if (!dead)
+        {
+            generateCloud(clouds, loader);
+            generateGround(ground, loader);
+            generateEnemy(enemies, loader);
+        }
 
-        processInput(window, player);
+        processInput(window, player, enemies, dead);
 
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        render(clouds);
-        render(ground);
-        render(enemies);
-        player.update(enemies, deltaTime);
+        render(clouds, dead);
+        render(ground, dead);
+        render(enemies, dead);
+        if (!dead)
+            player.update(enemies, deltaTime, dead);
         player.render(showHitbox);
         
 
@@ -140,8 +146,10 @@ int main()
     return 0;
 }
 
-void processInput(GLFWwindow *window, Player &player)
+void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemies, bool &dead)
 {
+    (void)enemies;
+    (void)dead;
     // Quit game, free resources and close the window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -153,8 +161,20 @@ void processInput(GLFWwindow *window, Player &player)
         player.move(STAND);
 
     // Jump
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    if (!dead && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         player.move(JUMP);
+
+    // If dead, remove all enemies, put the dino back on the ground and revive it (change sprite back to standing) and restart the game
+    if (dead && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        player.restart();
+        for (auto it = enemies.begin(); it != enemies.end();)
+        {
+            delete *it;
+            it = enemies.erase(it);
+        }
+        dead = false;
+    }
 
     // TESTING ONLY : Display hitboxes for player and enemies
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !showHitbox)
@@ -252,7 +272,7 @@ void checkCompileErrors(unsigned int shader, std::string type, const char *subTy
 void generateCloud(std::list<Object*> &clouds, Loader *loader)
 {
     // When last cloud reach a certain point in the scene, try to generate a new cloud
-    if (!clouds.size() || (*clouds.rbegin())->getMin().x < 0.40f)
+    if (clouds.empty() || (*clouds.rbegin())->getMin().x < 0.40f)
     {
         // 1% chace of generating a new cloud each frame
         int random = randomizer(motor);
@@ -270,7 +290,7 @@ void generateGround(std::list<Object*> &ground, Loader *loader)
 
 void generateEnemy(std::list<Object*> &enemies, Loader *loader)
 {
-    if (!enemies.size() || (*enemies.rbegin())->getMin().x < 0.40f)
+    if (enemies.empty() || (*enemies.rbegin())->getMin().x < 0.40f)
     {
         // 1% chace of generating a new enemy each frame
         int random = randomizer(motor);
@@ -287,12 +307,13 @@ void generateEnemy(std::list<Object*> &enemies, Loader *loader)
     }
 }
 
-void render(std::list<Object*> &list)
+void render(std::list<Object*> &list, bool &dead)
 {
     for (auto it = list.begin(); it != list.end();)
     {
         // Move and render the objects
-        (*it)->update(deltaTime);
+        if (!dead)
+            (*it)->update(deltaTime);
         (*it)->render(showHitbox);
 
         // If an object leaves the visible scene, delete it
