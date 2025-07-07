@@ -13,6 +13,7 @@ Object(loader)
 	crawl = false;
 	jumping = false;
 	isDead = false;
+
 	// Those are used for the jump physics
 	jump_velocity = 3.0f;
 	speedY = 0.0f;
@@ -160,7 +161,7 @@ void Player::update(std::list<Object*> &enemies, float deltaTime, bool &dead)
 			break;
 		}
 
-		// Since enemies are discarded when they reach the left side of the screen, we only check existing enemis, i.e. the ones on the screen
+		// Since enemies are discarded when they reach the left side of the screen, we only check existing enemies, i.e. the ones on the screen
 
        it++;
 	}
@@ -168,9 +169,11 @@ void Player::update(std::list<Object*> &enemies, float deltaTime, bool &dead)
 
 void Player::restart()
 {
+	// Reset sprite and hitboxes' positions
 	position = glm::vec3(-0.75f, 0.0f, 0.0f);
 	hitboxPosition[0] = position;
 	hitboxPosition[1] = position + glm::vec3(0.05f, 0.1f, 0.0f);
+	
 	crawl = false;
 	jumping = false;
 	isDead = false;

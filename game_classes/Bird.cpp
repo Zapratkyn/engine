@@ -4,14 +4,22 @@ Bird::Bird(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::
 Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 10.5f)
 {
 	// Use randomizer to determine the bird's altitude (between 2 options, one forcing the dino to crouch)
+	// It starts on the right end of the screen, sligthly out of range, to appear already generated
 	int random = randomizer(motor);
 	position = glm::vec3(1.05f, (random >= 50 ? 0.13f : 0.25f), 0.0f);
+
+	// This is used to switch between the 2 legs to make the dino look like it flies
 	frameCount = 0;
+
 	width = 0.15f;
 	height = 0.15f;
+
+	// The sprites
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
 	VAOs[0] = vaos["bird_1"];
 	VAOs[1] = vaos["bird_2"];
+
+	// The hitbox as it appears on the screen (red rectangle)
 	std::map<std::string, GLuint> hitboxes = loader->getHitboxes();
 	hitbox = hitboxes["bird"];
 }

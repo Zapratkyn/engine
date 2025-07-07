@@ -41,11 +41,14 @@ Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 12.5f)
 	else
 		height = 0.2f;
 
-	// The started on the right end of the screen, sligthly out of range, to appear already generated
+	// They start on the right end of the screen, sligthly out of range, to appear already generated
 	position = glm::vec3(1.05f, 0.0f, 0.0f);
 
+	// The sprite
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
 	VAO = vaos[type];
+
+	// The hitbox as it appears on the screen (red rectangle)
 	std::map<std::string, GLuint> hitboxes = loader->getHitboxes();
 	hitbox = hitboxes[type];
 }
