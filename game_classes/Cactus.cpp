@@ -1,22 +1,44 @@
 #include "../game_include/Cactus.hpp"
 
 Cactus::Cactus(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor) : 
-Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 12.0f)
+Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 12.5f)
 {
 	int random = randomizer(motor);
 	std::string type;
 	if (random < 16)
+	{
 		type = "cactus_small_1";
+		width = 0.05f;
+	}
 	else if (random < 32)
+	{
 		type = "cactus_small_2";
+		width = 0.1f;
+	}
 	else if (random < 48)
+	{
 		type = "cactus_small_3";
+		width = 0.15f;
+	}
 	else if (random < 59)
+	{
 		type = "cactus_tall_1";
+		width = 0.1f;
+	}
 	else if (random < 80)
+	{
 		type = "cactus_tall_2";
+		width = 0.2f;
+	}
 	else
+	{
 		type = "cactus_mix";
+		width = 0.3f;
+	}
+	if (random < 48)
+		height = 0.1f;
+	else
+		height = 0.2f;
 	position = glm::vec3(1.05f, 0.0f, 0.0f);
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
 	VAO = vaos[type];
@@ -33,11 +55,13 @@ void Cactus::render(bool showHitbox)
     glBindTexture(GL_TEXTURE_2D, assets);
     glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glUseProgram(hitboxShader);
-    glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
-   	glBindVertexArray(hitbox);
 	if (showHitbox)
+	{
+		glUseProgram(hitboxShader);
+	    glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
+	   	glBindVertexArray(hitbox);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
 }
 
 void Cactus::update(float deltaTime)

@@ -25,7 +25,8 @@ public:
 
 	virtual void render(bool showHitbox) = 0;
 	virtual void update(float deltaTime) = 0;
-	float getPosition();
+	glm::vec3 getMin();
+	glm::vec3 getMax();
 
 protected:
 
@@ -37,6 +38,8 @@ protected:
 	GLint hitboxPositionLoc;
 
 	glm::vec3 position;
+	float width;
+	float height;
 
 	glm::vec3 movement;
 	float speed;

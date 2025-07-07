@@ -114,7 +114,7 @@ int main()
         render(clouds);
         render(ground);
         render(enemies);
-        player.update(deltaTime);
+        player.update(enemies, deltaTime);
         player.render(showHitbox);
         
 
@@ -243,7 +243,7 @@ void checkCompileErrors(unsigned int shader, std::string type, const char *subTy
 void generateCloud(std::list<Object*> &clouds, Loader *loader)
 {
     // When last cloud reach a certain point in the scene, try to generate a new cloud
-    if (!clouds.size() || (*clouds.rbegin())->getPosition() < 0.40f)
+    if (!clouds.size() || (*clouds.rbegin())->getMin().x < 0.40f)
     {
         // 1% chace of generating a new cloud each frame
         int random = randomizer(motor);
@@ -255,13 +255,13 @@ void generateCloud(std::list<Object*> &clouds, Loader *loader)
 void generateGround(std::list<Object*> &ground, Loader *loader)
 {
     // When last ground piece reach a certain point in the scene, generate a new ground piece
-    if ((*ground.rbegin())->getPosition() < 0.40f)
+    if ((*ground.rbegin())->getMin().x < 0.40f)
         ground.push_back(new Ground(loader, randomizer, motor));
 }
 
 void generateEnemy(std::list<Object*> &enemies, Loader *loader)
 {
-    if (!enemies.size() || (*enemies.rbegin())->getPosition() < 0.40f)
+    if (!enemies.size() || (*enemies.rbegin())->getMin().x < 0.40f)
     {
         // 1% chace of generating a new enemy each frame
         int random = randomizer(motor);
@@ -287,7 +287,7 @@ void render(std::list<Object*> &list)
         (*it)->render(showHitbox);
 
         // If an object leaves the visible scene, delete it
-        if ((*it)->getPosition() < -2.0f)
+        if ((*it)->getMin().x < -2.0f)
         {
             delete *it;
             it = list.erase(it);

@@ -18,4 +18,5 @@ movement(movement),
 speed(speed)
 {}
 
-float Object::getPosition() { return position.x; }
+glm::vec3 Object::getMin() { return position; }
+glm::vec3 Object::getMax() { return glm::vec3(position.x + width, position.y + height, 0.0f); }
