@@ -1,4 +1,4 @@
-Graphices engine written in C++
+Graphics engine written in C++
 
 Current state :
 Learning OpenGL and trying to remake simple games
