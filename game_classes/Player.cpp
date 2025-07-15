@@ -7,20 +7,16 @@ Object(loader)
 	position = glm::vec3(-0.75f, 0.0f, 0.0f);
 	offset = glm::vec3(0.11f, 0.13f, 0.0f);
 
-	// Double hitbox for the standing sprite
-	// The second one slightly translated from the first, to give them a Z-ish shape, like the dino
 	hitboxPosition[0] = position;
 	hitboxPosition[1] = position + offset;
 	crawl = false;
 	jumping = false;
 	isDead = false;
 
-	// Those are used for the jump physics
 	jump_velocity = 3.0f;
 	speedY = 0.0f;
 	gravity = 9.8f;
 
-	// This is used to switch between the 2 legs to make the dino look like it runs
 	frameCount = 0;
 
 	// Hitboxes sizes, to detect collision

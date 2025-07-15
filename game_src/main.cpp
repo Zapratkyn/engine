@@ -8,6 +8,8 @@
 #include "../game_include/Cactus.hpp"
 #include "../game_include/Cloud.hpp"
 #include "../game_include/Ground.hpp"
+#include "../game_include/GameOver.hpp"
+#include "../game_include/Restart.hpp"
 #include "../game_include/stb_image.h"
 #include <iostream>
 #include <random>
@@ -33,17 +35,29 @@ void render(std::list<Object*> &list, bool &dead);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-bool showHitbox = false;
-
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+bool showHitbox = false;
 
 static std::random_device rd;
 static std::mt19937 motor(rd());
 std::uniform_int_distribution<int> randomizer(0, 100);
 
-int main()
+int main(int argc, char**argv)
 {
+    if (argc > 1)
+    {
+        std::string option(argv[1]);
+        if (argc > 2 || option != "debug")
+        {
+            std::cerr << "ERROR\nUsage : ./game\nAdd 'debug' to display hitboxes" << std::endl;
+            return 1;
+        }
+        else
+            showHitbox = true;
+    }
+
 	// glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -93,6 +107,8 @@ int main()
     loader = new Loader(DINO_GAME, objectShader, hitboxShader, positionLoc, hitboxPositionLoc);
     
     Player player(loader);
+    GameOver gameover(loader);
+    Restart restart(loader);
     std::list<Object*> clouds;
     std::list<Object*> ground;
     std::list<Object*> enemies;
@@ -126,6 +142,11 @@ int main()
         render(enemies, dead);
         if (!dead)
             player.update(enemies, deltaTime, dead);
+        else
+        {
+            gameover.render(showHitbox);
+            restart.render(showHitbox);
+        }
         player.render(showHitbox);
         
 
@@ -148,8 +169,6 @@ int main()
 
 void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemies, bool &dead)
 {
-    (void)enemies;
-    (void)dead;
     // Quit game, free resources and close the window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -175,12 +194,6 @@ void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemie
         }
         dead = false;
     }
-
-    // TESTING ONLY : Display hitboxes for player and enemies
-    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !showHitbox)
-        showHitbox = true;
-    else if (glfwGetKey(window, GLFW_KEY_H) != GLFW_PRESS && showHitbox)
-        showHitbox = false;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -221,7 +234,7 @@ void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
     }
     const char* vShaderCode = vertexCode.c_str();
-    const char * fShaderCode = fragmentCode.c_str()
+    const char* fShaderCode = fragmentCode.c_str()
 ;    // 2. compile shaders
     unsigned int vertex, fragment;
     // vertex shader
@@ -274,7 +287,7 @@ void generateCloud(std::list<Object*> &clouds, Loader *loader)
     // When last cloud reach a certain point in the scene, try to generate a new cloud
     if (clouds.empty() || (*clouds.rbegin())->getMin().x < 0.40f)
     {
-        // 1% chace of generating a new cloud each frame
+        // 2% chace of generating a new cloud each frame
         int random = randomizer(motor);
         if (random >= 99)
             clouds.push_back(new Cloud(loader, randomizer, motor));
@@ -292,12 +305,12 @@ void generateEnemy(std::list<Object*> &enemies, Loader *loader)
 {
     if (enemies.empty() || (*enemies.rbegin())->getMin().x < 0.40f)
     {
-        // 1% chace of generating a new enemy each frame
+        // 2% chace of generating a new enemy each frame
         int random = randomizer(motor);
         if (random >= 99)
         {
             Object *enemy;
-            random = randomizer(motor);
+            random = randomizer(motor); // 50% chances for a bird, 50% chances for a cactus
             if (random > 50)
                 enemy = new Bird(loader, randomizer, motor);
             else
@@ -313,7 +326,7 @@ void render(std::list<Object*> &list, bool &dead)
     {
         // Move and render the objects
         if (!dead)
-            (*it)->update(deltaTime);
+            (*it)->update(deltaTime); // Stops moving if the player is dead
         (*it)->render(showHitbox);
 
         // If an object leaves the visible scene, delete it

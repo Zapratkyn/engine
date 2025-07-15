@@ -22,7 +22,9 @@ void getSceneData(Scene scene, std::map<std::string, std::vector<int>> *coords, 
 				{"cactus_small_3", {280, 3, 49, 33}},
 				{"cactus_tall_1", {333, 3, 23, 49}},
 				{"cactus_tall_2", {358, 3, 48, 49}},
-				{"cactus_mix", {408, 3, 73, 49}}
+				{"cactus_mix", {408, 3, 73, 49}},
+				{"game_over", {655, 15, 191, 11}},
+				{"restart_button", {2, 2, 36 ,32}}
 			};
 			// the vertices names must match the sprites names.
 			// It is used to set the sprites' size on the screen
@@ -43,7 +45,9 @@ void getSceneData(Scene scene, std::map<std::string, std::vector<int>> *coords, 
 				{"cactus_small_3", {0.15f, 0.1f}},
 				{"cactus_tall_1", {0.1f, 0.2f}},
 				{"cactus_tall_2", {0.2f, 0.2f}},
-				{"cactus_mix", {0.3f, 0.2f}}
+				{"cactus_mix", {0.3f, 0.2f}},
+				{"game_over", {1.0f, 0.15f}},
+				{"restart_button", {0.2f, 0.2f}}
 			};
 			// hitboxes do not necessarilly match the size of the corresponding sprites
 			*hitboxes = {
