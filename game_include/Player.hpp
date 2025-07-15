@@ -10,6 +10,7 @@
 #include "Object.hpp"
 #include "Loader.hpp"
 #include <list>
+#include <map>
 
 enum direction {
 	CROUCH,
@@ -35,9 +36,8 @@ public:
 private:
 
 	bool crawl;
-	float width2;
-	float height_crawling;
-	float width_crawling;
+	std::map<std::string, float> hitboxWidths;
+	std::map<std::string, float> hitboxHeights;
 
 	bool jumping;
 	float jump_velocity;
@@ -48,9 +48,10 @@ private:
 	
 	unsigned int frameCount;
 
-	GLuint VAOs[5];
-	GLuint hitbox[3];
+	std::map<std::string, GLuint> VAOs;
+	std::map<std::string, GLuint> hitboxes;
 	glm::vec3 hitboxPosition[2];
+	glm::vec3 offset;
 
 };
 

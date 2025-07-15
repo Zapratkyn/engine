@@ -5,11 +5,12 @@ Object(loader)
 {
 	// Starting position, only modified on the Y axis when jumping
 	position = glm::vec3(-0.75f, 0.0f, 0.0f);
+	offset = glm::vec3(0.11f, 0.13f, 0.0f);
 
 	// Double hitbox for the standing sprite
 	// The second one slightly translated from the first, to give them a Z-ish shape, like the dino
 	hitboxPosition[0] = position;
-	hitboxPosition[1] = position + glm::vec3(0.09f, 0.1f, 0.0f);
+	hitboxPosition[1] = position + offset;
 	crawl = false;
 	jumping = false;
 	isDead = false;
@@ -23,25 +24,26 @@ Object(loader)
 	frameCount = 0;
 
 	// Hitboxes sizes, to detect collision
-	width = 0.15f;
-	width2 = 0.11f;
-	height = 0.1f;
-	height_crawling = 0.12f;
-	width_crawling = 0.2f;
+	hitboxWidths["standing_1"] = 0.13f;
+	hitboxWidths["standing_2"] = 0.08f;
+	hitboxWidths["crawling"] = 0.17f;
+	hitboxHeights["standing_1"] = 0.1f;
+	hitboxHeights["standing_2"] = 0.07f;
+	hitboxHeights["crawling"] = 0.12f;
 
 	// The sprites
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
-	VAOs[0] = vaos["dino_standing_1"];
-	VAOs[1] = vaos["dino_standing_2"];
-	VAOs[2] = vaos["dino_crawling_1"];
-	VAOs[3] = vaos["dino_crawling_2"];
-	VAOs[4] = vaos["dino_dead"];
+	VAOs["dino_standing_1"] = vaos["dino_standing_1"];
+	VAOs["dino_standing_2"] = vaos["dino_standing_2"];
+	VAOs["dino_crawling_1"] = vaos["dino_crawling_1"];
+	VAOs["dino_crawling_2"] = vaos["dino_crawling_2"];
+	VAOs["dino_dead"] = vaos["dino_dead"];
 
 	// The hitboxes as displayed on the screen (blue rectangles)
-	std::map<std::string, GLuint> hitboxes = loader->getHitboxes();
-	hitbox[0] = hitboxes["dino_standing_1"];
-	hitbox[1] = hitboxes["dino_standing_2"];
-	hitbox[2] = hitboxes["dino_crawling"];
+	std::map<std::string, GLuint> loadedHitboxes = loader->getHitboxes();
+	hitboxes["dino_standing_1"] = loadedHitboxes["dino_standing_1"];
+	hitboxes["dino_standing_2"] = loadedHitboxes["dino_standing_2"];
+	hitboxes["dino_crawling"] = loadedHitboxes["dino_crawling"];
 }
 
 void Player::render(bool showHitbox)
@@ -52,14 +54,15 @@ void Player::render(bool showHitbox)
 	model = glm::translate(model, position);
 	glUniformMatrix4fv(positionLoc, 1, GL_FALSE, &model[0][0]);
     glBindTexture(GL_TEXTURE_2D, assets);
+    // std::string 
     if (isDead)
-    	glBindVertexArray(VAOs[4]);
+    	glBindVertexArray(VAOs["dino_dead"]);
     else
     {
 	    if (crawl)
-			glBindVertexArray(VAOs[(frameCount % 40 > 20) ? 2 : 3]); // Walk
+			glBindVertexArray(VAOs[(frameCount % 40 > 20) ? "dino_crawling_1" : "dino_crawling_2"]); // Walk
 		else
-			glBindVertexArray(VAOs[(frameCount % 40 > 20 || jumping) ? 0 : 1]); // Walk. It stops while jumping
+			glBindVertexArray(VAOs[(frameCount % 40 > 20 || jumping) ? "dino_standing_1" : "dino_standing_2"]); // Walk. It stops while jumping
 	}
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	if (showHitbox)
@@ -68,20 +71,20 @@ void Player::render(bool showHitbox)
 		glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
 		if (crawl)
 		{
-			glBindVertexArray(hitbox[2]);
+			glBindVertexArray(hitboxes["dino_crawling"]);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 		else
 		{
 			// Bind the rectangle for coming drawings
-			glBindVertexArray(hitbox[0]);
+			glBindVertexArray(hitboxes["dino_standing_1"]);
 
 			// Draw the lower rectangle, his bottom-left corner being the same as the dino sprite's, no new translate() needed
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 			// Translate to the second rectangle's position, relative to the dino sprite
-			glBindVertexArray(hitbox[1]);
-			model = glm::translate(model, glm::vec3(0.09f, 0.1f, 0.0f));
+			glBindVertexArray(hitboxes["dino_standing_2"]);
+			model = glm::translate(model, offset);
 			glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
 
 			// Draw the upper rectangle
@@ -126,17 +129,17 @@ void Player::update(std::list<Object*> &enemies, float deltaTime, bool &dead)
 		{
 			position = glm::vec3(-0.75f, 0.0f, 0.0f);
 			hitboxPosition[0] = position;
-			hitboxPosition[1] = position + glm::vec3(0.09f, 0.1f, 0.0f);
+			hitboxPosition[1] = position + offset;
 			speedY = 0.0f;
 			jumping = false;
 		}
 	}
 
 	// Finding the upper right corner of the lower hitbox (while standing) or the only hitbox (while crawling)
-	glm::vec3 max1 = glm::vec3(hitboxPosition[0].x + (crawl ? width_crawling : width), hitboxPosition[0].y + (crawl ? height_crawling : height), 0.0f);
+	glm::vec3 max1 = glm::vec3(hitboxPosition[0].x + (crawl ? hitboxWidths["crawling"] : hitboxWidths["standing_1"]), hitboxPosition[0].y + (crawl ? hitboxHeights["crawling"] : hitboxHeights["standing_1"]), 0.0f);
 
 	// Finding the upper right corner of the upper hitbox (always, only used if standing)
-	glm::vec3 max2 = glm::vec3(hitboxPosition[1].x + width2, hitboxPosition[1].y + height, 0.0f);
+	glm::vec3 max2 = glm::vec3(hitboxPosition[1].x + hitboxWidths["standing_2"], hitboxPosition[1].y + hitboxHeights["standing_2"], 0.0f);
 
 	// Bottom left corners are already known as hitboxPosition[0] and hitboxPosition[1]
 
@@ -172,7 +175,7 @@ void Player::restart()
 	// Reset sprite and hitboxes' positions
 	position = glm::vec3(-0.75f, 0.0f, 0.0f);
 	hitboxPosition[0] = position;
-	hitboxPosition[1] = position + glm::vec3(0.05f, 0.1f, 0.0f);
+	hitboxPosition[1] = position + offset;
 	
 	crawl = false;
 	jumping = false;

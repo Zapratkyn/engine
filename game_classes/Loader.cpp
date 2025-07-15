@@ -26,11 +26,11 @@ hitboxPositionLoc(hitboxPositionLoc)
 
 Loader::~Loader()
 {
-	for (std::map<std::string, GLuint>::iterator it = VAOs.begin(); it != VAOs.end(); it++)
+	for (auto it = VAOs.begin(); it != VAOs.end(); it++)
 		glDeleteVertexArrays(1, &(it->second));
-	for (std::vector<GLuint>::iterator it = VBOs.begin(); it != VBOs.end(); it++)
+	for (auto it = VBOs.begin(); it != VBOs.end(); it++)
 		glDeleteBuffers(1, (&*it));
-	for (std::vector<GLuint>::iterator it = EBOs.begin(); it != EBOs.end(); it++)
+	for (auto it = EBOs.begin(); it != EBOs.end(); it++)
 		glDeleteBuffers(1, &(*it));
 }
 

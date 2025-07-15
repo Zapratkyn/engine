@@ -45,11 +45,11 @@ void getSceneData(Scene scene, std::map<std::string, std::vector<int>> *coords, 
 				{"cactus_tall_2", {0.2f, 0.2f}},
 				{"cactus_mix", {0.3f, 0.2f}}
 			};
-			// hitboxes do not necessarilly match the size of the corrsponding sprites
+			// hitboxes do not necessarilly match the size of the corresponding sprites
 			*hitboxes = {
-				{"dino_standing_1", {0.15f, 0.1f, 0.0f, 0.0f, 1.0f}},
-				{"dino_standing_2", {0.11f, 0.1f, 0.0f, 0.0f, 1.0f}},
-				{"dino_crawling", {0.2f, 0.12f, 0.0f, 0.0f, 1.0f}},
+				{"dino_standing_1", {0.13f, 0.1f, 0.0f, 0.0f, 1.0f}},
+				{"dino_standing_2", {0.08f, 0.07f, 0.0f, 0.0f, 1.0f}},
+				{"dino_crawling", {0.17f, 0.12f, 0.0f, 0.0f, 1.0f}},
 				{"bird", {0.15f, 0.15f, 1.0f, 0.0f, 0.0f}},
 				{"cactus_small_1", {0.05f, 0.1f, 1.0f, 0.0f, 0.0f}},
 				{"cactus_small_2", {0.1f, 0.1f, 1.0f, 0.0f, 0.0f}},

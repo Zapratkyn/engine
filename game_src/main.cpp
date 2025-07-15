@@ -155,7 +155,7 @@ void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemie
         glfwSetWindowShouldClose(window, true);
 
     // Toggle crouching
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    if (!dead && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
         player.move(CROUCH);
     else
         player.move(STAND);
