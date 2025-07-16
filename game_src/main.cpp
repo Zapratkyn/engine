@@ -22,7 +22,7 @@ using namespace std::chrono;
 // A function to resize objects when resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemies, bool &dead);
+void processInput(GLFWwindow *window, Player &player, Score &score, std::list<Object*> &enemies, bool &dead);
 
 void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType);
 void checkCompileErrors(unsigned int shader, std::string type, const char *subType);
@@ -134,7 +134,7 @@ int main(int argc, char**argv)
             generateEnemy(enemies, loader);
         }
 
-        processInput(window, player, enemies, dead);
+        processInput(window, player, score, enemies, dead);
 
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -171,7 +171,7 @@ int main(int argc, char**argv)
     return 0;
 }
 
-void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemies, bool &dead)
+void processInput(GLFWwindow *window, Player &player, Score &score, std::list<Object*> &enemies, bool &dead)
 {
     // Quit game, free resources and close the window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -191,6 +191,7 @@ void processInput(GLFWwindow *window, Player &player, std::list<Object*> &enemie
     if (dead && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
         player.restart();
+        score.restart();
         for (auto it = enemies.begin(); it != enemies.end();)
         {
             delete *it;

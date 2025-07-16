@@ -89,11 +89,12 @@ void Score::update(bool &dead)
 		if ((frameCount % 10) == 0)
 			currentScore++;
 	}
-	else if (currentScore > 0)
-	{
-		if (currentScore > hiScore)
-			hiScore = currentScore;
-		currentScore = 0;
-		frameCount = 0;
-	}
+	else if (currentScore > hiScore)
+		hiScore = currentScore;
+}
+
+void Score::restart()
+{
+	currentScore = 0;
+	frameCount = 0;
 }

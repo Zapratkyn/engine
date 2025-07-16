@@ -23,6 +23,7 @@ public:
 
 	void render();
 	void update(bool &dead);
+	void restart();
 
 private:
 	GLuint VAOs[10];
