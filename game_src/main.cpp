@@ -10,6 +10,7 @@
 #include "../game_include/Ground.hpp"
 #include "../game_include/GameOver.hpp"
 #include "../game_include/Restart.hpp"
+#include "../game_include/Score.hpp"
 #include "../game_include/stb_image.h"
 #include <iostream>
 #include <random>
@@ -109,6 +110,7 @@ int main(int argc, char**argv)
     Player player(loader);
     GameOver gameover(loader);
     Restart restart(loader);
+    Score score(loader);
     std::list<Object*> clouds;
     std::list<Object*> ground;
     std::list<Object*> enemies;
@@ -148,6 +150,8 @@ int main(int argc, char**argv)
             restart.render(showHitbox);
         }
         player.render(showHitbox);
+        // score.update();
+        score.render(showHitbox);
         
 
         glfwSwapBuffers(window);
@@ -326,7 +330,7 @@ void render(std::list<Object*> &list, bool &dead)
     {
         // Move and render the objects
         if (!dead)
-            (*it)->update(deltaTime); // Stops moving if the player is dead
+            (*it)->update(deltaTime); // Stops scrolling if the player is dead
         (*it)->render(showHitbox);
 
         // If an object leaves the visible scene, delete it

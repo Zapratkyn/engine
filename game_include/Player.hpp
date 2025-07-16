@@ -59,7 +59,7 @@ private:
 	// The second one slightly translated from the first, to give them a Z-ish shape, like the dino
 	glm::vec3 hitboxPosition[2];
 
-	// This represent the translation from 1st to 2nd hitbox
+	// This represent the translation from 1st to 2nd hitbox positions
 	glm::vec3 offset;
 
 };
