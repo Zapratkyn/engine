@@ -21,8 +21,8 @@ public:
 
 	Score(Loader *loader);
 
-	void render(bool showHitbox) override;
-	void update(float deltaTime) override;
+	void render();
+	void update(bool &dead);
 
 private:
 	GLuint VAOs[10];

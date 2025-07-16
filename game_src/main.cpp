@@ -30,7 +30,7 @@ void checkCompileErrors(unsigned int shader, std::string type, const char *subTy
 void generateCloud(std::list<Object*> &clouds, Loader *loader);
 void generateGround(std::list<Object*> &ground, Loader *loader);
 void generateEnemy(std::list<Object*> &enemies, Loader *loader);
-void render(std::list<Object*> &list, bool &dead);
+void render(std::list<Object*> &list, bool &dead, bool enemy);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -139,19 +139,19 @@ int main(int argc, char**argv)
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        render(clouds, dead);
-        render(ground, dead);
-        render(enemies, dead);
+        render(clouds, dead, false);
+        render(ground, dead, false);
+        render(enemies, dead, true);
         if (!dead)
             player.update(enemies, deltaTime, dead);
         else
         {
-            gameover.render(showHitbox);
-            restart.render(showHitbox);
+            gameover.render();
+            restart.render();
         }
-        player.render(showHitbox);
-        // score.update();
-        score.render(showHitbox);
+        player.render(showHitbox, dead);
+        score.update(dead);
+        score.render();
         
 
         glfwSwapBuffers(window);
@@ -324,14 +324,14 @@ void generateEnemy(std::list<Object*> &enemies, Loader *loader)
     }
 }
 
-void render(std::list<Object*> &list, bool &dead)
+void render(std::list<Object*> &list, bool &dead, bool enemy)
 {
     for (auto it = list.begin(); it != list.end();)
     {
         // Move and render the objects
         if (!dead)
             (*it)->update(deltaTime); // Stops scrolling if the player is dead
-        (*it)->render(showHitbox);
+        enemy ? (*it)->render(showHitbox) : (*it)->render();
 
         // If an object leaves the visible scene, delete it
         if ((*it)->getMin().x < -2.0f)

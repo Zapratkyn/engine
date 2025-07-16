@@ -20,9 +20,6 @@ public:
 
 	Ground(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
 
-	void render(bool showHitbox) override;
-	void update(float deltaTime) override;
-
 };
 
 #endif

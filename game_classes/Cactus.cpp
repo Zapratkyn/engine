@@ -52,28 +52,3 @@ Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 12.5f)
 	std::map<std::string, GLuint> hitboxes = loader->getHitboxes();
 	hitbox = hitboxes[type];
 }
-
-void Cactus::render(bool showHitbox)
-{
-	glUseProgram(objectShader);
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-	glUniformMatrix4fv(positionLoc, 1, GL_FALSE, &model[0][0]);
-    glBindTexture(GL_TEXTURE_2D, assets);
-    glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	if (showHitbox)
-	{
-		glUseProgram(hitboxShader);
-	    glUniformMatrix4fv(hitboxPositionLoc, 1, GL_FALSE, &model[0][0]);
-	   	glBindVertexArray(hitbox);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	}
-}
-
-void Cactus::update(float deltaTime)
-{
-	// Use the speed to make them move from right to left
-	float velocity = speed * deltaTime;
-	position += movement * velocity;
-}

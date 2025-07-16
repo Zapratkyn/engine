@@ -15,14 +15,15 @@ Score::Score(Loader *loader) : Object(loader), currentScore(0), hiScore(0)
 	VAOs[9] = vaos["9"];
 	hi = vaos["hi"];
 
+	frameCount = 0;
+
 	hiPosition = glm::vec3(0.3f, 0.85f, 0.0f);
 	offsets[0] = glm::vec3(0.15f, 0.0f, 0.0f); // between 'hi' and high score and between high score and current score
 	offsets[1] = glm::vec3(0.04f, 0.0f, 0.0f); // between digits
 }
 
-void Score::render(bool showHitbox)
+void Score::render()
 {
-	(void)showHitbox;
 	std::list<int> hiDigits = getDigits(hiScore);
 	std::list<int> currentDigits = getDigits(currentScore);
 	glUseProgram(objectShader);
@@ -80,4 +81,19 @@ std::list<int> Score::getDigits(unsigned int nb)
     return result;
 }
 
-void Score::update(float deltaTime) { (void)deltaTime; }
+void Score::update(bool &dead) 
+{
+	if (!dead)
+	{
+		frameCount++;
+		if ((frameCount % 10) == 0)
+			currentScore++;
+	}
+	else if (currentScore > 0)
+	{
+		if (currentScore > hiScore)
+			hiScore = currentScore;
+		currentScore = 0;
+		frameCount = 0;
+	}
+}

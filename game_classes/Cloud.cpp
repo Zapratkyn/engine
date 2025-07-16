@@ -16,24 +16,5 @@ Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 2.5f)
 	std::map<std::string, GLuint> vaos = loader->getVAOs();
 	VAO = vaos["cloud"];
 
-	// No hitbox since it is  not an enemy
-}
-
-void Cloud::render(bool showHitbox)
-{
-	(void)showHitbox;
-	glUseProgram(objectShader);
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-	glUniformMatrix4fv(positionLoc, 1, GL_FALSE, &model[0][0]);
-    glBindTexture(GL_TEXTURE_2D, assets);
-    glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-}
-
-void Cloud::update(float deltaTime)
-{
-	// Use the speed to make them move from right to left
-	float velocity = speed * deltaTime;
-	position += movement * velocity;
+	// No hitbox since it is not an enemy
 }

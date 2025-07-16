@@ -11,7 +11,6 @@ Object(loader)
 	hitboxPosition[1] = position + offset;
 	crawl = false;
 	jumping = false;
-	isDead = false;
 
 	jump_velocity = 3.0f;
 	speedY = 0.0f;
@@ -42,7 +41,7 @@ Object(loader)
 	hitboxes["dino_crawling"] = loadedHitboxes["dino_crawling"];
 }
 
-void Player::render(bool showHitbox)
+void Player::render(bool showHitbox, bool &dead)
 {
 	// Sprite
 	glUseProgram(objectShader);
@@ -50,8 +49,7 @@ void Player::render(bool showHitbox)
 	model = glm::translate(model, position);
 	glUniformMatrix4fv(positionLoc, 1, GL_FALSE, &model[0][0]);
     glBindTexture(GL_TEXTURE_2D, assets);
-    // std::string 
-    if (isDead)
+    if (dead)
     	glBindVertexArray(VAOs["dino_dead"]);
     else
     {
@@ -107,8 +105,6 @@ void Player::move(direction direction)
 	}
 }
 
-void Player::update(float deltaTime) { (void)deltaTime; }
-
 void Player::update(std::list<Object*> &enemies, float deltaTime, bool &dead)
 {
 	if (jumping)
@@ -148,14 +144,12 @@ void Player::update(std::list<Object*> &enemies, float deltaTime, bool &dead)
 		// Check if the lower hitbox (while standing) or the only hitbox (while crawling) hits the enemy
 		if ((hitboxPosition[0].x <= enemy_max.x && max1.x >= enemy_min.x) && (hitboxPosition[0].y <= enemy_max.y && max1.y >= enemy_min.y))
 		{
-			isDead = true;
 			dead = true;
 			break;
 		}
 		// If standing, check if the upper hitbox hits the enemy
 		if (!crawl && (hitboxPosition[1].x <= enemy_max.x && max2.x >= enemy_min.x) && (hitboxPosition[1].y <= enemy_max.y && max2.y >= enemy_min.y))
 		{
-			isDead = true;
 			dead = true;
 			break;
 		}
@@ -175,7 +169,6 @@ void Player::restart()
 	
 	crawl = false;
 	jumping = false;
-	isDead = false;
 	speedY = 0.0f;
 	frameCount = 0;
 }

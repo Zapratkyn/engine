@@ -22,14 +22,10 @@ public:
 	Bird(Loader *loader, std::uniform_int_distribution<int> &randomizer, std::mt19937 &motor);
 
 	void render(bool showHitbox) override;
-	void update(float deltaTime) override;
 
 private:
 
-	unsigned int frameCount;
-
 	GLuint VAOs[2];
-	GLuint hitbox;
 
 };
 

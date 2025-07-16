@@ -23,8 +23,9 @@ public:
 	Object(Loader *loader, glm::vec3 movement, float speed);
 	virtual ~Object() = default;
 
-	virtual void render(bool showHitbox) = 0;
-	virtual void update(float deltaTime) = 0;
+	virtual void render(bool showHitbox);
+	virtual void render();
+	virtual void update(float deltaTime);
 	glm::vec3 getMin();
 	glm::vec3 getMax();
 
@@ -35,6 +36,7 @@ protected:
 	GLuint assets;
 
 	GLuint VAO;
+	GLuint hitbox;
 
 	GLint positionLoc;
 	GLint hitboxPositionLoc;
@@ -45,6 +47,8 @@ protected:
 
 	glm::vec3 movement;
 	float speed;
+
+	unsigned int frameCount;
 
 };
 

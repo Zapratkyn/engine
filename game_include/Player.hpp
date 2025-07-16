@@ -27,9 +27,8 @@ public:
 
 	Player(Loader *loader);
 
-	void render(bool showHitbox) override;
+	void render(bool showHitbox, bool &dead);
 	void update(std::list<Object*> &enemies, float deltaTime, bool &dead);
-	void update(float deltaTime) override;
 	void move(direction direction);
 	void restart();
 
@@ -46,11 +45,6 @@ private:
 	float jump_velocity;
 	float speedY;
 	float gravity;
-
-	bool isDead;
-	
-	// This is used to switch between the 2 legs to make the dino look like it runs
-	unsigned int frameCount;
 
 	std::map<std::string, GLuint> VAOs;
 	std::map<std::string, GLuint> hitboxes;

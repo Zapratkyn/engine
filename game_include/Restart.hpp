@@ -20,9 +20,6 @@ public:
 
 	Restart(Loader *loader);
 
-	void render(bool showHitbox) override;
-	void update(float deltaTime) override;
-
 };
 
 #endif

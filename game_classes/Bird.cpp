@@ -44,10 +44,3 @@ void Bird::render(bool showHitbox)
 	if (frameCount >= 10000)
 		frameCount = 0;
 }
-
-void Bird::update(float deltaTime)
-{
-	// Use the speed to make them move from right to left
-	float velocity = speed * deltaTime;
-	position += movement * velocity;
-}
