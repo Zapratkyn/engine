@@ -1,5 +1,5 @@
-NAME					= game
-SRC						= game_src/* game_classes/* 
+NAME					= engine
+SRC						= engine_src/* engine_classes/* 
 LINKS					= -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 CC						= g++
 RM						= rm -rf
@@ -15,7 +15,7 @@ clean:
 	$(RM) $(OBJS)
 
 fclean: clean
-	$(RM) game
+	$(RM) engine
 
 re: fclean all
 
