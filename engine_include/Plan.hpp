@@ -1,7 +1,12 @@
-#ifndef __AXIS__
-	#define __AXIS__
+#ifndef __PLAN__
+	#define __PLAN__
 
-class Axis
+#include "VisualHelper.hpp"
+#include "Grid.hpp"
+
+class Grid;
+
+class Plan : public VisualHelper
 {
 
 public:
@@ -9,11 +14,7 @@ public:
 	Plan(GLuint shader);
 
 	void render();
-
-private:
-
-	GLuint axes[2];
-	GLuint shader;
+	void setGrid(Grid *grid);
 
 };
 
