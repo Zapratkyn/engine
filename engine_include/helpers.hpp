@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 
-void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType);
-void checkCompileErrors(unsigned int shader, std::string type, const char *subType);
+// void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType);
+// void checkCompileErrors(unsigned int shader, std::string type, const char *subType);
 
 #endif
