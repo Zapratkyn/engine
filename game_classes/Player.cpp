@@ -156,7 +156,7 @@ void Player::update(std::list<Object*> &enemies, float deltaTime, bool &dead)
 
 		// Since enemies are discarded when they reach the left side of the screen, we only check existing enemies, i.e. the ones on the screen
 
-       it++;
+       	it++;
 	}
 }
 

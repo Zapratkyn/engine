@@ -22,7 +22,8 @@ using namespace std::chrono;
 // A function to resize objects when resizing the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-void processInput(GLFWwindow *window, Player &player, Score &score, std::list<Object*> &enemies, bool &dead);
+void processInput(GLFWwindow *window);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType);
 void checkCompileErrors(unsigned int shader, std::string type, const char *subType);
@@ -41,11 +42,17 @@ float lastFrame = 0.0f;
 
 bool showHitbox = false;
 
+bool dead;
+
 static std::random_device rd;
 static std::mt19937 motor(rd());
 std::uniform_int_distribution<int> randomizer(0, 100);
 
-int main(int argc, char**argv)
+Player *player;
+Score *score;
+std::list<Object*> enemies;
+
+int main(int argc, char** argv)
 {
     if (argc > 1)
     {
@@ -77,6 +84,7 @@ int main(int argc, char**argv)
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -107,19 +115,19 @@ int main(int argc, char**argv)
     Loader *loader;
     loader = new Loader(DINO_GAME, objectShader, hitboxShader, positionLoc, hitboxPositionLoc);
     
-    Player player(loader);
+    // Player player(loader);
+    player = new Player(loader);
     GameOver gameover(loader);
     Restart restart(loader);
-    Score score(loader);
+    score = new Score(loader);
+    // Score score(loader);
     std::list<Object*> clouds;
     std::list<Object*> ground;
-    std::list<Object*> enemies;
+    // std::list<Object*> enemies;
 
     // Generate a first cloud and a first ground
     clouds.push_back(new Cloud(loader, randomizer, motor));
     ground.push_back(new Ground(loader, randomizer, motor));
-
-    bool dead;
 
     while(!glfwWindowShouldClose(window))
     {
@@ -134,7 +142,7 @@ int main(int argc, char**argv)
             generateEnemy(enemies, loader);
         }
 
-        processInput(window, player, score, enemies, dead);
+        processInput(window);
 
         glClearColor(0.97f, 0.97f, 0.97f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -143,15 +151,15 @@ int main(int argc, char**argv)
         render(ground, dead, false);
         render(enemies, dead, true);
         if (!dead)
-            player.update(enemies, deltaTime, dead);
+            player->update(enemies, deltaTime, dead);
         else
         {
             gameover.render();
             restart.render();
         }
-        player.render(showHitbox, dead);
-        score.update(dead);
-        score.render();
+        player->render(showHitbox, dead);
+        score->update(dead);
+        score->render();
         
 
         glfwSwapBuffers(window);
@@ -166,12 +174,14 @@ int main(int argc, char**argv)
     for (auto it = enemies.begin(); it != enemies.end(); it++)
         delete *it;
     delete loader;
+    delete player;
+    delete score;
 
     glfwTerminate();
     return 0;
 }
 
-void processInput(GLFWwindow *window, Player &player, Score &score, std::list<Object*> &enemies, bool &dead)
+void processInput(GLFWwindow *window)
 {
     // Quit game, free resources and close the window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -179,19 +189,19 @@ void processInput(GLFWwindow *window, Player &player, Score &score, std::list<Ob
 
     // Toggle crouching
     if (!dead && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        player.move(CROUCH);
+        player->move(CROUCH);
     else
-        player.move(STAND);
+        player->move(STAND);
 
     // Jump
     if (!dead && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        player.move(JUMP);
+        player->move(JUMP);
 
     // If dead, remove all enemies, put the dino back on the ground and revive it (change sprite back to standing) and restart the game
     if (dead && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        player.restart();
-        score.restart();
+        player->restart();
+        score->restart();
         for (auto it = enemies.begin(); it != enemies.end();)
         {
             delete *it;
@@ -207,6 +217,23 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    (void)window;
+    (void)mods;
+    if (dead && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        player->restart();
+        score->restart();
+        for (auto it = enemies.begin(); it != enemies.end();)
+        {
+            delete *it;
+            it = enemies.erase(it);
+        }
+        dead = false;
+    }
 }
 
 void makeShader(const char *vertexPath, const char *fragmentPath, GLuint *shader, const char *subType)
@@ -289,10 +316,10 @@ void checkCompileErrors(unsigned int shader, std::string type, const char *subTy
 
 void generateCloud(std::list<Object*> &clouds, Loader *loader)
 {
-    // When last cloud reach a certain point in the scene, try to generate a new cloud
+    // When last cloud reaches a certain point in the scene, try to generate a new cloud
     if (clouds.empty() || (*clouds.rbegin())->getMin().x < 0.40f)
     {
-        // 2% chace of generating a new cloud each frame
+        // 2% chance of generating a new cloud each frame
         int random = randomizer(motor);
         if (random >= 99)
             clouds.push_back(new Cloud(loader, randomizer, motor));
@@ -301,7 +328,7 @@ void generateCloud(std::list<Object*> &clouds, Loader *loader)
 
 void generateGround(std::list<Object*> &ground, Loader *loader)
 {
-    // When last ground piece reach a certain point in the scene, generate a new ground piece
+    // When last ground piece reaches a certain point in the scene, generate a new ground piece
     if ((*ground.rbegin())->getMin().x < 0.40f)
         ground.push_back(new Ground(loader, randomizer, motor));
 }
@@ -315,7 +342,7 @@ void generateEnemy(std::list<Object*> &enemies, Loader *loader)
         if (random >= 99)
         {
             Object *enemy;
-            random = randomizer(motor); // 50% chances for a bird, 50% chances for a cactus
+            random = randomizer(motor); // 50% chance for a bird, 50% chance for a cactus
             if (random > 50)
                 enemy = new Bird(loader, randomizer, motor);
             else

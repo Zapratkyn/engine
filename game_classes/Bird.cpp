@@ -8,7 +8,7 @@ Object(loader, glm::vec3(-0.1f, 0.0f, 0.0f), 10.5f)
 	int random = randomizer(motor);
 	position = glm::vec3(1.05f, (random >= 50 ? 0.13f : 0.25f), 0.0f);
 
-	// This is used to switch between the 2 legs to make the dino look like it flies
+	// This is used to switch between the 2 sprites to make the bird look like it flies
 	frameCount = 0;
 
 	width = 0.15f;
