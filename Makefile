@@ -1,5 +1,5 @@
 NAME					= engine
-SRC						= engine_src/* engine_classes/* 
+SRC						= main.cpp glad.c Core/* Graphics/*
 LINKS					= -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 CC						= g++
 RM						= rm -rf
