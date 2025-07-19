@@ -1,22 +1,37 @@
-NAME					= engine
-SRC						= main.cpp glad.c Core/* Graphics/* Input/*
-LINKS					= -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
-CC						= g++
-RM						= rm -rf
-CFLAGS					= -std=c++20 -Wall -Wextra -Werror
+CXX := g++
+CXXFLAGS := -Wall -Wextra -Werror -std=c++17 -I./src
+SRC_DIR := .
+BUILD_DIR := build
+SRCS := $(wildcard $(SRC_DIR)/main.cpp) \
+        $(wildcard $(SRC_DIR)/*.c) \
+        $(wildcard $(SRC_DIR)/Core/*.cpp) \
+        $(wildcard $(SRC_DIR)/Input/*.cpp) \
+        $(wildcard $(SRC_DIR)/Graphics/*.cpp)
 
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(filter %.cpp,$(SRCS)))
+OBJS += $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(filter %.c,$(SRCS)))
 
-all: $(NAME)
+DEPS := $(OBJS:.o=.d)
+TARGET := $(BUILD_DIR)/engine
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(SRC) -o $(NAME) $(LINKS)
+LINKS := -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LINKS)
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -MMD -c $< -o $@
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -MMD -c $< -o $@
+
+-include $(DEPS)
 
 clean:
-	$(RM) $(OBJS)
+	rm -rf $(BUILD_DIR)
 
-fclean: clean
-	$(RM) engine
-
-re: fclean all
-
-.PHONY: all clean fclean re
+.PHONY: all clean
