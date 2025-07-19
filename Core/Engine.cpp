@@ -1,5 +1,6 @@
 #include "Engine.hpp"
 #include "Window.hpp"
+#include "../Input/InputManager.hpp"
 #include "../Graphics/Renderer.hpp"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -16,6 +17,7 @@ void Engine::Run()
 	while (!Window::ShouldClose())
 	{
 		Renderer::Draw();
+		InputManager::ProcessInput();
 		Window::PollEvents();
 		Window::SwapBuffers();
 	}
