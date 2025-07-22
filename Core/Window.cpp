@@ -1,4 +1,5 @@
 #include "Window.hpp"
+#include "../Input/InputManager.hpp"
 #include <glad/glad.h>
 
 static GLFWwindow* window = nullptr;
@@ -15,11 +16,18 @@ bool Window::Init(int width, int height, const char *title)
     glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return false;
     glViewport(0, 0, width, height);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     return true;
 }
 
 void Window::SwapBuffers() { glfwSwapBuffers(window); }
 void Window::PollEvents() { glfwPollEvents(); }
-void Window::Shutdown() { glfwDestroyWindow(window); glfwTerminate(); }
 bool Window::ShouldClose() { return glfwWindowShouldClose(window); }
+void Window::Shutdown() 
+{ 
+    glfwDestroyWindow(window); 
+    glfwTerminate(); 
+}
+
 GLFWwindow* Window::GetGLFWwindow() { return window; }
