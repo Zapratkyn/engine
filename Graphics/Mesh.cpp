@@ -47,10 +47,12 @@ Mesh::Mesh(std::string path, int nbOfSprites, glm::vec3 pos)
     	2, 3, 0
     };
 
+    int spriteSize = width / nbOfSprites;
+
     for (int i = 0; i < nbOfSprites; i++)
     {
-    	float u_min = (float)(192 * i) / width;
-	    float u_max = (float)(192 * (i + 1)) / width;
+    	float u_min = (float)(spriteSize * i) / width;
+	    float u_max = (float)(spriteSize * (i + 1)) / width;
 
 	    float vertices[] =
 	    {

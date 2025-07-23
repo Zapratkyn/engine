@@ -20,6 +20,7 @@ void Renderer::Init()
 
     getMeshes()["black_warrior_idle"] = new Mesh(assetsPath + "Units/Black Units/Warrior/Warrior_Idle.png", 8, glm::vec3(-0.5f, 0.0f, 0.0f));
     getMeshes()["black_monk_idle"] = new Mesh(assetsPath + "Units/Black Units/Monk/Idle.png", 6, glm::vec3(0.5f, 0.0f, 0.0f));
+    getMeshes()["yellow_lancer_idle"] = new Mesh(assetsPath + "Units/Yellow Units/Lancer/Lancer_Idle.png", 12, glm::vec3(0.0f, 0.5f, 0.0f));
 	
     shader = new Shader("shader.vert", "shader.frag");
     positionLoc = glGetUniformLocation(shader->ID, "position");
