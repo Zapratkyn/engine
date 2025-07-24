@@ -4,7 +4,8 @@
 #include <sstream>
 #include <iostream>
 
-Shader::Shader(const char* vPath, const char* fPath) {
+Shader::Shader(const char* vPath, const char* fPath) 
+{
     std::ifstream vFile(vPath), fFile(fPath);
     std::stringstream vStream, fStream;
     vStream << vFile.rdbuf();

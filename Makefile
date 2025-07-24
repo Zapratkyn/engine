@@ -6,7 +6,8 @@ SRCS := $(wildcard $(SRC_DIR)/main.cpp) \
         $(wildcard $(SRC_DIR)/*.c) \
         $(wildcard $(SRC_DIR)/Core/*.cpp) \
         $(wildcard $(SRC_DIR)/Input/*.cpp) \
-        $(wildcard $(SRC_DIR)/Graphics/*.cpp)
+        $(wildcard $(SRC_DIR)/Graphics/*.cpp) \
+        $(wildcard $(SRC_DIR)/Game/*.cpp)
 
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(filter %.cpp,$(SRCS)))
 OBJS += $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(filter %.c,$(SRCS)))

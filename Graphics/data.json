@@ -1,0 +1,44 @@
+{
+	"animations" :
+	{
+		"warrior_idle" :
+		{
+			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Idle.png",
+			"frameWidth" : 192,
+			"frameHeight" : 192,
+			"frameCount" : 8,
+			"frameTime" : 100
+		},
+		"warrior_guard" :
+		{
+			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Guard.png",
+			"frameWidth" : 192,
+			"frameHeight" : 192,
+			"frameCount" : 6,
+			"frameTime" : 100
+		},
+		"warrior_attack1" :
+		{
+			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Attack1.png",
+			"frameWidth" : 192,
+			"frameHeight" : 192,
+			"frameCount" : 4,
+			"frameTime" : 100
+		}
+	},
+	"scenes" :
+	{
+		"test" :
+		{
+			"background" : { "r" : 1.0, "g" : 1.0, "b" : 1.0 },
+			"player" : { "x" : -0.5, "y" : 0.0 },
+			"units" :
+			{
+				"warriors" :
+				[
+					{ "x" : 0.5, "y" : 0.0 }
+				]
+			}
+		}
+	}
+}
