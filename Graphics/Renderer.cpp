@@ -27,7 +27,7 @@ std::unordered_map<std::string, Mesh*> &Renderer::getMeshes()
     return meshes;
 }
 
-static GLint positionLoc;
+static GLint modelLoc, colorLoc, projectionLoc;
 static json data;
 
 struct Animation *ParseAnims(std::string &animName, json::iterator::reference &animData);
@@ -44,8 +44,19 @@ void Renderer::Init()
     }
 	
     getShaders()["main"] = new Shader("shader.vert", "shader.frag");
-    positionLoc = glGetUniformLocation(getShaders()["main"]->ID, "position");
-    // colorLoc = glGetUniformLocation(getShaders()["main"]->ID, "backgroundColor");
+    getShaders()["main"]->use();
+    modelLoc = glGetUniformLocation(getShaders()["main"]->ID, "model");
+    projectionLoc = glGetUniformLocation(getShaders()["main"]->ID, "projection");
+    colorLoc = glGetUniformLocation(getShaders()["main"]->ID, "backgroundColor");
+
+    glm::mat4 projection = glm::ortho(
+        0.0f,               // gauche
+        (float)800, // droite
+        0.0f,               // bas
+        (float)600 // haut
+    );
+
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
 
     getMeshes()["unit"] = new Mesh;
 }
@@ -81,6 +92,7 @@ struct Animation *ParseAnims(std::string &animName, json::iterator::reference &a
     anim->frameHeight = animData["frameHeight"];
     anim->frameCount = animData["frameCount"];
     anim->frameTime = animData["frameTime"];
+    anim->framesPerRow = anim->textureWidth / anim->frameWidth;
 
     return anim;
 }
@@ -89,8 +101,7 @@ void Renderer::Draw()
 {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    getShaders()["main"]->use();
-    Scene::getPlayer()->Draw(positionLoc);
+    Scene::getPlayer()->Draw();
 }
 
 void Renderer::Free()
@@ -105,5 +116,6 @@ void Renderer::Free()
         delete it->second;
 }
 
-GLint Renderer::getPositionLoc() { return positionLoc; }
+GLint Renderer::getModelLoc() { return modelLoc; }
+GLint Renderer::getColorLoc() { return colorLoc; }
 json Renderer::getData() { return data; }

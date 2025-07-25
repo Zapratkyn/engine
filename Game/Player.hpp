@@ -18,7 +18,7 @@ public:
 	Player(const char *scene);
 	void setPosition(float x, float y);
 	void StartAnimation();
-	void Draw(GLint positionLoc);
+	void Draw();
 	void setGuarding(bool guard);
 	bool isGuarding();
 

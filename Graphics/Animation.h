@@ -6,7 +6,7 @@ struct Animation
     GLuint texture;
     int frameWidth, frameHeight;
     int textureWidth, textureHeight;
-    int frameCount;
+    int frameCount, framesPerRow;
     float frameTime;
 };
 
