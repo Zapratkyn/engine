@@ -19,6 +19,7 @@ void Engine::Run()
 	Scene::getPlayer()->StartAnimation();
 	while (!Window::ShouldClose())
 	{
+		Scene::Update();
 		Renderer::Draw();
 		InputManager::ProcessInput();
 		Window::PollEvents();

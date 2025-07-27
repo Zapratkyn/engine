@@ -51,9 +51,9 @@ void Renderer::Init()
 
     glm::mat4 projection = glm::ortho(
         0.0f,               // gauche
-        (float)800, // droite
+        (float)800,         // droite
         0.0f,               // bas
-        (float)600 // haut
+        (float)600          // haut
     );
 
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
@@ -87,6 +87,7 @@ struct Animation *ParseAnims(std::string &animName, json::iterator::reference &a
         std::cerr << "ERROR::TEXTURE::LOADING_FAILED::" << animName << "\n";
     stbi_image_free(imageData);
 
+    anim->name = animName;
     anim->texture = texture;
     anim->frameWidth = animData["frameWidth"];
     anim->frameHeight = animData["frameHeight"];

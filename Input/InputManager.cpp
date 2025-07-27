@@ -6,16 +6,55 @@
 
 std::unordered_map<int, bool> keyPressed;
 
-void InputManager::HandleKey(int key, GLFWwindow *window, Player *player)
+void InputManager::HandleKeyDown(int key, GLFWwindow *window, Player *player)
 {
 	switch (key) {
         case GLFW_KEY_LEFT_SHIFT:
-            if (!player->isGuarding())
-                player->setGuarding(true);
+            player->setGuarding(true);
+            break;
+        case GLFW_KEY_RIGHT:
+            player->setMoving(RIGHT, true);
+            break;
+        // case GLFW_KEY_DOWN:
+        //     player->setMoving(DOWN, true);
+        //     break;
+        case GLFW_KEY_LEFT:
+            player->setMoving(LEFT, true);
+            break;
+        // case GLFW_KEY_UP:
+        //     player->setMoving(UP, true);
+        //     break;
+        case GLFW_KEY_M:
+            player->ToggleMeshDisplay();
             break;
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, true);
             break;
+        default:
+            std::cout << "This key has no effect" << std::endl;
+            break;
+    }
+}
+
+void InputManager::HandleKeyUp(int key, GLFWwindow *window, Player *player)
+{
+    (void)window;
+    switch (key) {
+        case GLFW_KEY_LEFT_SHIFT:
+            player->setGuarding(false);
+            break;
+        case GLFW_KEY_RIGHT:
+            player->setMoving(RIGHT, false);
+            break;
+        // case GLFW_KEY_DOWN:
+        //     player->setMoving(DOWN, false);
+        //     break;
+        case GLFW_KEY_LEFT:
+            player->setMoving(LEFT, false);
+            break;
+        // case GLFW_KEY_UP:
+        //     player->setMoving(UP, false);
+        //     break;
         default:
             std::cout << "This key has no effect" << std::endl;
             break;
@@ -27,19 +66,18 @@ void InputManager::ProcessInput()
 {
 	GLFWwindow *window = Window::GetGLFWwindow();
     Player *player = Scene::getPlayer();
-	for (int key : {GLFW_KEY_P, GLFW_KEY_G, GLFW_KEY_ESCAPE, GLFW_KEY_LEFT_SHIFT}) 
+	for (int key : allKeys)
 	{
         bool isDown = glfwGetKey(window, key) == GLFW_PRESS;
 
         if (isDown && !keyPressed[key]) {
-            HandleKey(key, window, player);
+            HandleKeyDown(key, window, player);
             keyPressed[key] = true;
         }
 
         if (!isDown && keyPressed[key]) {
+            HandleKeyUp(key, window, player);
             keyPressed[key] = false;
         }
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_PRESS && player->isGuarding())
-        player->setGuarding(false);
 }

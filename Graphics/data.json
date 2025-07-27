@@ -9,6 +9,14 @@
 			"frameCount" : 8,
 			"frameTime" : 100
 		},
+		"warrior_run" :
+		{
+			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Run.png",
+			"frameWidth" : 192,
+			"frameHeight" : 192,
+			"frameCount" : 6,
+			"frameTime" : 100
+		},
 		"warrior_guard" :
 		{
 			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Guard.png",

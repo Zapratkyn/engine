@@ -6,6 +6,7 @@
 namespace Scene
 {
 	void Load(const char* scene);
+	void Update();
 	Player *getPlayer();
 }
 

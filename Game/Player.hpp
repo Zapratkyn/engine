@@ -18,9 +18,13 @@ public:
 	Player(const char *scene);
 	void setPosition(float x, float y);
 	void StartAnimation();
+	void Update();
 	void Draw();
 	void setGuarding(bool guard);
 	bool isGuarding();
+	void setMoving(Direction direction, bool move);
+	bool isMoving();
+	void ToggleMeshDisplay();
 
 private:
 
@@ -36,6 +40,12 @@ private:
 	void UpdateUVs();
 
 	bool guarding;
+
+	bool directions[4];
+	bool moving;
+	std::string facing;
+
+	bool displayMesh;
 
 };
 

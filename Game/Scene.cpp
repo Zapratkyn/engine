@@ -19,5 +19,10 @@ void Scene::Load(const char *scene)
 	}
 }
 
+void Scene::Update()
+{
+	player->Update();
+}
+
 Player *Scene::getPlayer() { return player; }
 // std::vector<Unit*> &Scene::getUnits() { return units; }
