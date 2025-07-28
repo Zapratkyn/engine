@@ -14,9 +14,9 @@ const int allKeys[] =
 	GLFW_KEY_DOWN,
 	GLFW_KEY_LEFT,
 	GLFW_KEY_UP,
-	GLFW_KEY_M,
+	GLFW_KEY_F1,
 	GLFW_KEY_E,
-	GLFW_KEY_A
+	GLFW_KEY_Q
 };
 
 namespace InputManager

@@ -28,6 +28,7 @@ Player::Player(const char *scene)
 
 	facing = "right";
 	guarding = false;
+	attacking = false;
 	moving = false;
 	displayMesh = false;
 
@@ -135,6 +136,7 @@ void Player::Update()
 		position.y += 0.005;
 	if ((currentAnim->name == "attack1" || currentAnim->name == "attack2") && currentFrame == 3)
 	{
+		attacking = false;
 		currentAnim = animations[moving ? "run" : "idle"];
 		StartAnimation();
 	}
@@ -156,6 +158,7 @@ void Player::Attack(std::string attack)
 {
 	if (guarding)
 		return;
+	attacking = true;
 	currentAnim = animations["attack" + attack];
 	StartAnimation();
 }
@@ -167,7 +170,7 @@ void Player::setMoving(Direction direction, bool move)
 	if (move && !moving)
 		moving = true;
 
-	if (!guarding)
+	if (!guarding && !attacking)
 		currentAnim = animations["run"];
 	if (facing == "left" && direction == RIGHT && !directions[LEFT])
 		facing = "right";

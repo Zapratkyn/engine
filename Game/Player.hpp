@@ -41,6 +41,7 @@ private:
 	void UpdateUVs();
 
 	bool guarding;
+	bool attacking;
 
 	bool directions[4];
 	bool moving;

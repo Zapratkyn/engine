@@ -24,10 +24,10 @@ void InputManager::HandleKeyDown(int key, GLFWwindow *window, Player *player)
         case GLFW_KEY_UP:
             player->setMoving(UP, true);
             break;
-        case GLFW_KEY_M:
+        case GLFW_KEY_F1:
             player->ToggleMeshDisplay();
             break;
-        case GLFW_KEY_A:
+        case GLFW_KEY_Q:
             player->Attack("1");
             break;
         case GLFW_KEY_E:
