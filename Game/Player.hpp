@@ -25,6 +25,7 @@ public:
 	void setMoving(Direction direction, bool move);
 	bool isMoving();
 	void ToggleMeshDisplay();
+	void Attack(std::string attack);
 
 private:
 

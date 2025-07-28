@@ -13,6 +13,7 @@ Player::Player(const char *scene)
 	animations["guard"] = anims["warrior_guard"];
 	animations["run"] = anims["warrior_run"];
 	animations["attack1"] = anims["warrior_attack1"];
+	animations["attack2"] = anims["warrior_attack2"];
 
 	auto meshes = Renderer::getMeshes();
 	mesh = meshes["unit"];
@@ -128,6 +129,15 @@ void Player::Update()
 		position.x += 0.005;
 	if (moving && directions[LEFT])
 		position.x -= 0.005;
+	if (moving && directions[DOWN])
+		position.y -= 0.005;
+	if (moving && directions[UP])
+		position.y += 0.005;
+	if ((currentAnim->name == "attack1" || currentAnim->name == "attack2") && currentFrame == 3)
+	{
+		currentAnim = animations[moving ? "run" : "idle"];
+		StartAnimation();
+	}
 }
 
 void Player::setGuarding(bool guard)
@@ -142,47 +152,49 @@ void Player::setGuarding(bool guard)
 	StartAnimation();
 }
 
+void Player::Attack(std::string attack)
+{
+	if (guarding)
+		return;
+	currentAnim = animations["attack" + attack];
+	StartAnimation();
+}
+
 void Player::setMoving(Direction direction, bool move)
 {
 	directions[direction] = move;
 
 	if (move && !moving)
-	{
 		moving = true;
-		if (!guarding)
-			currentAnim = animations["run"];
-		if (facing == "left" && direction == RIGHT)
-			facing = "right";
-		if (facing == "right" && direction == LEFT)
-			facing = "left";
-	}
 
-	if (move && directions[LEFT] && directions[RIGHT])
-	{
-		moving = false;
-		if (!guarding)
-			currentAnim = animations["idle"];
-	}
-
-	if (!move && !directions[LEFT] && !directions[RIGHT])
-	{
-		moving = false;
-		if (!guarding)
-			currentAnim = animations["idle"];
-	}
-
-	if (!move && direction == LEFT && directions[RIGHT])
-	{
-		moving = true;
+	if (!guarding)
+		currentAnim = animations["run"];
+	if (facing == "left" && direction == RIGHT && !directions[LEFT])
 		facing = "right";
+	if (facing == "right" && direction == LEFT && !directions[RIGHT])
+		facing = "left";
+
+	// Trying to move in two opposite directions at once will stop the move
+	if (move && ((directions[LEFT] && directions[RIGHT]) || (directions[DOWN] && directions[UP])))
+	{
+		moving = false;
 		if (!guarding)
-			currentAnim = animations["run"];
+			currentAnim = animations["idle"];
 	}
 
-	if (!move && direction == RIGHT && directions[LEFT])
+	// Releasing all the keys will stop the move
+	if (!move && !directions[LEFT] && !directions[RIGHT] && !directions[DOWN] && !directions[UP])
+	{
+		moving = false;
+		if (!guarding)
+			currentAnim = animations["idle"];
+	}
+
+	// While pressing two opposite directions buttons, releasing one will make the character move in (and face in the case of left or right) the other
+	if (!move && ((direction == LEFT && directions[RIGHT]) || (direction == RIGHT && directions[LEFT]) || (direction == UP && directions[DOWN]) || (direction == DOWN && directions[UP])))
 	{
 		moving = true;
-		facing = "left";
+		facing = direction == LEFT ? "right" : "left";
 		if (!guarding)
 			currentAnim = animations["run"];
 	}

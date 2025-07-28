@@ -87,7 +87,7 @@ struct Animation *ParseAnims(std::string &animName, json::iterator::reference &a
         std::cerr << "ERROR::TEXTURE::LOADING_FAILED::" << animName << "\n";
     stbi_image_free(imageData);
 
-    anim->name = animName;
+    anim->name = &animName[animName.find_last_of("_") + 1];
     anim->texture = texture;
     anim->frameWidth = animData["frameWidth"];
     anim->frameHeight = animData["frameHeight"];
