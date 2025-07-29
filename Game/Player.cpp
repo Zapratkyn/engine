@@ -28,6 +28,7 @@ Player::Player(const char *scene, std::string &unit)
 	attacking = false;
 	moving = false;
 	displayMesh = false;
+	type = unit;
 
 	for (int i = 0; i < 4; i++)
 		directions[i] = false;
@@ -210,3 +211,4 @@ void Player::setMoving(Direction direction, bool move)
 bool Player::isGuarding() { return guarding; }
 bool Player::isMoving() { return moving; }
 void Player::ToggleMeshDisplay() { displayMesh = !displayMesh; }
+std::string Player::getType() { return type; }

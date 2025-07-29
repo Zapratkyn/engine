@@ -8,9 +8,11 @@ std::unordered_map<int, bool> keyPressed;
 
 void InputManager::HandleKeyDown(int key, GLFWwindow *window, Player *player)
 {
+    std::string type = player->getType();
 	switch (key) {
         case GLFW_KEY_LEFT_SHIFT:
-            player->setGuarding(true);
+            if (type == "warrior")
+                player->setGuarding(true);
             break;
         case GLFW_KEY_RIGHT:
             player->setMoving(RIGHT, true);
@@ -28,10 +30,12 @@ void InputManager::HandleKeyDown(int key, GLFWwindow *window, Player *player)
             player->ToggleMeshDisplay();
             break;
         case GLFW_KEY_Q:
-            player->Attack("1");
+            if (type == "warrior")
+                player->Attack("1");
             break;
         case GLFW_KEY_E:
-            player->Attack("2");
+            if (type == "warrior")
+                player->Attack("2");
             break;
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, true);

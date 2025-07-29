@@ -26,6 +26,7 @@ public:
 	bool isMoving();
 	void ToggleMeshDisplay();
 	void Attack(std::string attack);
+	std::string getType();
 
 private:
 
@@ -48,6 +49,8 @@ private:
 	std::string facing;
 
 	bool displayMesh;
+
+	std::string type;
 
 };
 
