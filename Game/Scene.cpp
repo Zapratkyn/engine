@@ -7,11 +7,11 @@ using json = nlohmann::json;
 static Player *player;
 // static std::vector<Unit*> units;
 
-void Scene::Load(const char *scene)
+void Scene::Load(const char *scene, std::string &unit)
 {
 	json data = Renderer::getData();
 	if (!player)
-		player = new Player(scene);
+		player = new Player(scene, unit);
 	else
 	{
 		auto pl = data["scenes"][scene]["player"];

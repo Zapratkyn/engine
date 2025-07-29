@@ -17,7 +17,7 @@ namespace Renderer
     void Free();
 
     std::unordered_map<std::string, Shader*> &getShaders();
-    std::unordered_map<std::string, struct Animation*> &getAnimations();
+    std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> &getAnimations();
     std::unordered_map<std::string, Mesh*> &getMeshes();
 
     GLint getModelLoc();

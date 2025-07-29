@@ -6,14 +6,11 @@
 
 using json = nlohmann::json;
 
-Player::Player(const char *scene)
+Player::Player(const char *scene, std::string &unit)
 {
-	auto anims = Renderer::getAnimations();
-	animations["idle"] = anims["warrior_idle"];
-	animations["guard"] = anims["warrior_guard"];
-	animations["run"] = anims["warrior_run"];
-	animations["attack1"] = anims["warrior_attack1"];
-	animations["attack2"] = anims["warrior_attack2"];
+	auto anims = Renderer::getAnimations()[unit];
+	for (auto it = anims.begin(); it != anims.end(); it++)
+		animations[it->first] = it->second;
 
 	auto meshes = Renderer::getMeshes();
 	mesh = meshes["unit"];
@@ -201,6 +198,11 @@ void Player::setMoving(Direction direction, bool move)
 		if (!guarding)
 			currentAnim = animations["run"];
 	}
+
+	/* 
+	TODO : When pressing 3 directions at once, releasing the one not opposite to another should not trigger the running animation
+	E.g. : I press left, right and up. Idle is triggered. If I release up, it should not trigger running while not moving
+	*/ 
 
 	StartAnimation();
 }

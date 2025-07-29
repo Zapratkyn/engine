@@ -15,7 +15,7 @@ class Player
 
 public:
 
-	Player(const char *scene);
+	Player(const char *scene, std::string &unit);
 	void setPosition(float x, float y);
 	void StartAnimation();
 	void Update();

@@ -6,11 +6,11 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-bool Engine::Init()
+bool Engine::Init(std::string &unit)
 {
 	Window::Init(800, 600, "Mini engine");
 	Renderer::Init();
-	Scene::Load("test");
+	Scene::Load("test", unit);
 	return true;
 }
 

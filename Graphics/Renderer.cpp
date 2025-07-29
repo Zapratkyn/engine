@@ -15,9 +15,9 @@ std::unordered_map<std::string, Shader*> &Renderer::getShaders()
     return shaders;
 }
 
-std::unordered_map<std::string, struct Animation*> &Renderer::getAnimations()
+std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> &Renderer::getAnimations()
 {
-    static std::unordered_map<std::string, struct Animation*> animations;
+    static std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> animations;
     return animations;
 }
 
@@ -37,10 +37,15 @@ void Renderer::Init()
     std::ifstream file("Graphics/data.json");
     data = json::parse(file);
 
-    for (auto& [animName, animData] : data["animations"].items())
+    for (auto& [unitName, unitData] : data["animations"].items())
     {
-        std::string name(animName);
-        getAnimations()[name] = ParseAnims(name, animData);
+        std::string name(unitName);
+        getAnimations().try_emplace(name);
+        for (auto& [animName, animData] : unitData.items())
+        {
+            std::string aName(animName);
+            getAnimations()[name][aName] = ParseAnims(aName, animData);
+        }
     }
 	
     getShaders()["main"] = new Shader("shader.vert", "shader.frag");
@@ -100,7 +105,7 @@ struct Animation *ParseAnims(std::string &animName, json::iterator::reference &a
 
 void Renderer::Draw()
 {
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     Scene::getPlayer()->Draw();
 }
@@ -111,7 +116,10 @@ void Renderer::Free()
         delete it->second;
 
     for (auto it = getAnimations().begin(); it != getAnimations().end(); it++)
-        delete it->second;
+    {
+        for (auto anim = it->second.begin(); anim != it->second.end(); anim++)
+            delete anim->second;
+    }
 
     for (auto it = getMeshes().begin(); it != getMeshes().end(); it++)
         delete it->second;

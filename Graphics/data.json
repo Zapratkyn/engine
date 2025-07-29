@@ -1,45 +1,209 @@
 {
 	"animations" :
 	{
-		"warrior_idle" :
+		"warrior" :
 		{
-			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Idle.png",
-			"frameWidth" : 192,
-			"frameHeight" : 192,
-			"frameCount" : 8,
-			"frameTime" : 100
+			"idle" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Idle.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 8,
+				"frameTime" : 100
+			},
+			"run" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Run.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"guard" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Guard.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"attack1" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Attack1.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 4,
+				"frameTime" : 100
+			},
+			"attack2" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Attack2.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 4,
+				"frameTime" : 100
+			}
 		},
-		"warrior_run" :
+		"archer" :
 		{
-			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Run.png",
-			"frameWidth" : 192,
-			"frameHeight" : 192,
-			"frameCount" : 6,
-			"frameTime" : 100
+			"idle" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Archer/Archer_Idle.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"run" : 
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Archer/Archer_Run.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 4,
+				"frameTime" : 100
+			},
+			"shoot" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Archer/Archer_Shoot.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 8,
+				"frameTime" : 100
+			}
 		},
-		"warrior_guard" :
+		"lancer" :
 		{
-			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Guard.png",
-			"frameWidth" : 192,
-			"frameHeight" : 192,
-			"frameCount" : 6,
-			"frameTime" : 100
+			"down_attack" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Down_Attack.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 3,
+				"frameTime" : 100
+			},
+			"down_defence" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Down_Defence.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"downRight_attack" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_DownRight_Attack.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 3,
+				"frameTime" : 100
+			},
+			"downRight_Defence" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_DownRight_Defence.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"idle" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Idle.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 12,
+				"frameTime" : 100
+			},
+			"right_attack" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Right_Attack.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 3,
+				"frameTime" : 100
+			},
+			"right_defence" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Right_Defence.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"run" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Run.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"up_attack" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Up_Attack.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 3,
+				"frameTime" : 100
+			},
+			"up_defence" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Up_Defence.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"upRight_attack" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_UpRight_Attack.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 3,
+				"frameTime" : 100
+			},
+			"upRight_defence" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_UpRight_Defence.png",
+				"frameWidth" : 320,
+				"frameHeight" : 320,
+				"frameCount" : 3,
+				"frameTime" : 100
+			}
 		},
-		"warrior_attack1" :
+		"monk": 
 		{
-			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Attack1.png",
-			"frameWidth" : 192,
-			"frameHeight" : 192,
-			"frameCount" : 4,
-			"frameTime" : 100
-		},
-		"warrior_attack2" :
-		{
-			"texture" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Attack2.png",
-			"frameWidth" : 192,
-			"frameHeight" : 192,
-			"frameCount" : 4,
-			"frameTime" : 100
+			"heal" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Monk/Heal.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 11,
+				"frameTime" : 100
+			},
+			"heal_effect" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Monk/Heal_Effect.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 11,
+				"frameTime" : 100
+			},
+			"idle" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Monk/Idle.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 6,
+				"frameTime" : 100
+			},
+			"run" :
+			{
+				"texture" : "Resources/Tiny Swords/Units/Black Units/Monk/Run.png",
+				"frameWidth" : 192,
+				"frameHeight" : 192,
+				"frameCount" : 4,
+				"frameTime" : 100
+			}
 		}
 	},
 	"scenes" :
