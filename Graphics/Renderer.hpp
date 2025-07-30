@@ -6,7 +6,7 @@
 #include <nlohmann/json.hpp>
 #include "Shader.hpp"
 #include "Mesh.hpp"
-#include "Animation.h"
+#include "Helpers.h"
 
 using json = nlohmann::json;
 
@@ -17,6 +17,7 @@ namespace Renderer
     void Free();
 
     std::unordered_map<std::string, Shader*> &getShaders();
+    std::unordered_map<std::string, struct Texture*> &getTextures();
     std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> &getAnimations();
     std::unordered_map<std::string, Mesh*> &getMeshes();
 

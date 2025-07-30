@@ -59,10 +59,18 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &EBO);
 }
 
-void Mesh::UpdateUVs(const std::vector<float>& uvs)
+void Mesh::UpdateUVs(const FrameUV& uvs)
 {
+    float uv[8] = 
+    {
+        uvs.u_min, uvs.v_min,
+        uvs.u_max, uvs.v_min,
+        uvs.u_max, uvs.v_max,
+        uvs.u_min, uvs.v_max
+    };
+
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, uvs.size() * sizeof(float), uvs.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(uv), uv);
 }
 
 GLuint Mesh::getVAO() { return VAO; }

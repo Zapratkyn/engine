@@ -16,7 +16,6 @@ bool Engine::Init(std::string &unit)
 
 void Engine::Run()
 {
-	Scene::getPlayer()->StartAnimation();
 	while (!Window::ShouldClose())
 	{
 		Scene::Update();

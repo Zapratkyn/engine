@@ -8,6 +8,7 @@ namespace Scene
 	void Load(const char* scene, std::string &unit);
 	void Update();
 	Player *getPlayer();
+	std::string &getSceneName();
 }
 
 #endif

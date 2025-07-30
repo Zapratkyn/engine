@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <chrono>
 #include "../Graphics/Mesh.hpp"
-#include "../Graphics/Animation.h"
+#include "../Graphics/Helpers.h"
 
 class Player
 {
@@ -30,16 +30,16 @@ public:
 
 private:
 
+	std::string type;
+
 	std::unordered_map<std::string, struct Animation*> animations;
 	struct Animation *currentAnim;
 	int currentFrame;
-	glm::vec2 position;
-
 	std::chrono::time_point<std::chrono::steady_clock> lastUpdate;
 
-	Mesh *mesh;
+	glm::vec2 position;
 
-	void UpdateUVs();
+	Mesh *mesh;
 
 	bool guarding;
 	bool attacking;
@@ -49,9 +49,6 @@ private:
 	std::string facing;
 
 	bool displayMesh;
-
-	std::string type;
-
 };
 
 #endif

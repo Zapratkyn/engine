@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include "Helpers.h"
 
 class Mesh
 {
@@ -16,7 +17,7 @@ public:
 	~Mesh();
 
 	GLuint getVAO();
-	void UpdateUVs(const std::vector<float>& uvs);
+	void UpdateUVs(const FrameUV& uvs);
 
 private:
 

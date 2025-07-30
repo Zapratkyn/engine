@@ -41,7 +41,8 @@ bool checkUnit(std::string &unit)
 		"warrior",
 		"archer",
 		"lancer",
-		"monk"
+		"monk",
+		"knight"
 	};
 
 	for (std::string u : units)

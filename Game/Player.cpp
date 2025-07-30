@@ -44,7 +44,7 @@ void Player::StartAnimation()
 { 
 	currentFrame = 0;
 	lastUpdate = std::chrono::steady_clock::now(); 
-	UpdateUVs();
+	mesh->UpdateUVs(currentAnim->frames[currentFrame]);
 }
 
 void Player::Draw()
@@ -57,7 +57,7 @@ void Player::Draw()
         currentFrame = (currentFrame + 1) % currentAnim->frameCount;
         lastUpdate = now;
 
-    	UpdateUVs();
+    	mesh->UpdateUVs(currentAnim->frames[currentFrame]);
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -67,19 +67,19 @@ void Player::Draw()
 	float py = position.y * 600 + currentAnim->frameHeight / 2.0f;
 	model = glm::translate(model, glm::vec3(px, py, 0.0f));
 	model = glm::scale(model, glm::vec3(facing == "left" ? -currentAnim->frameWidth : currentAnim->frameWidth, currentAnim->frameHeight, 1.0f));
+	if (type == "knight")
+		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 1.0f));
 	glUniformMatrix4fv(Renderer::getModelLoc(), 1, GL_FALSE, &model[0][0]);
 
     if (!displayMesh)
 	{
-	    glBindTexture(GL_TEXTURE_2D, currentAnim->texture);
+	    glBindTexture(GL_TEXTURE_2D, currentAnim->texture->texture);
 		glBindVertexArray(mesh->getVAO());
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
 	else
 	{
-		// Matrice de position
-	    // glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f));
 
 	   	GLint modelLoc = Renderer::getModelLoc();
 	   	GLint colorLoc = Renderer::getColorLoc();
@@ -93,31 +93,10 @@ void Player::Draw()
 	    // 2. Dessiner ensuite le mesh animé (avec texture)
 	    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.01f)); // léger décalage z
 	    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
-	    glBindTexture(GL_TEXTURE_2D, currentAnim->texture);
+	    glBindTexture(GL_TEXTURE_2D, currentAnim->texture->texture);
 	    glBindVertexArray(mesh->getVAO());
 	    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
-}
-
-void Player::UpdateUVs()
-{
-    float uSize = (float)currentAnim->frameWidth / currentAnim->textureWidth;
-    float vSize = (float)currentAnim->frameHeight / currentAnim->textureHeight;
-
-    int col = currentFrame % currentAnim->framesPerRow;
-    int row = currentFrame / currentAnim->framesPerRow;
-
-    float u = col * uSize;
-    float v = row * vSize;
-
-    std::vector<float> uvs = {
-        u,         v,
-        u + uSize, v,
-        u + uSize, v + vSize,
-        u,         v + vSize
-    };
-
-    mesh->UpdateUVs(uvs);
 }
 
 void Player::Update()

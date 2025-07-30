@@ -4,6 +4,12 @@
 
 using json = nlohmann::json;
 
+std::string &Scene::getSceneName()
+{
+	static std::string sceneName;
+	return sceneName;
+}
+
 static Player *player;
 // static std::vector<Unit*> units;
 
@@ -17,6 +23,8 @@ void Scene::Load(const char *scene, std::string &unit)
 		auto pl = data["scenes"][scene]["player"];
 		player->setPosition(pl["x"], pl["y"]);
 	}
+
+	getSceneName() = scene;
 }
 
 void Scene::Update()
