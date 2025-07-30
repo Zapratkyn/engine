@@ -9,7 +9,7 @@ class Window
 
 public:
 
-	static bool Init(int width, int height, const char *title);
+	static bool Init(const char *title);
 	static bool ShouldClose();
 	static void SwapBuffers();
 	static void PollEvents();

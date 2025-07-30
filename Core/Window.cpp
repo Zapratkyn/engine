@@ -1,21 +1,23 @@
 #include "Window.hpp"
 #include "../Input/InputManager.hpp"
+#include "Config.hpp"
 #include <glad/glad.h>
 
 static GLFWwindow* window = nullptr;
 
-bool Window::Init(int width, int height, const char *title)
+bool Window::Init(const char *title)
 {
+    std::unordered_map config = getConfig();
 	if (!glfwInit()) return false;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    window = glfwCreateWindow(config["width"], config["height"], title, nullptr, nullptr);
     if (!window) return false;
     glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return false;
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, config["width"], config["height"]);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     return true;

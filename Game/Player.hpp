@@ -15,9 +15,8 @@ class Player
 
 public:
 
-	Player(const char *scene, std::string &unit);
+	Player(const char *scene);
 	void setPosition(float x, float y);
-	void StartAnimation();
 	void Update();
 	void Draw();
 	void setGuarding(bool guard);
@@ -46,9 +45,11 @@ private:
 
 	bool directions[4];
 	bool moving;
-	std::string facing;
+	bool reverseX;
 
 	bool displayMesh;
+
+	void StartAnimation();
 };
 
 #endif

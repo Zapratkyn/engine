@@ -193,7 +193,11 @@
 		"test" :
 		{
 			"background" : { "r" : 0.8, "g" : 0.8, "b" : 0.8, "w" : 1.0 },
-			"player" : { "x" : 0.2, "y" : 0.5 },
+			"player" : 
+			{ 
+				"unit" : "knight",
+				"position" : {"x" : 0.2, "y" : 0.5}
+			},
 			"units" :
 			{
 				"warrior" :

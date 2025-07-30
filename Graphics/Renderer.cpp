@@ -9,6 +9,11 @@
 #include "stb_image.h"
 
 
+/*
+"Lazy" declaration of static objects
+I need them empty upon construction
+*/
+
 std::unordered_map<std::string, Shader*> &Renderer::getShaders()
 {
     static std::unordered_map<std::string, Shader*> shaders;
@@ -74,10 +79,10 @@ void Renderer::Init()
     colorLoc = glGetUniformLocation(getShaders()["main"]->ID, "backgroundColor");
 
     glm::mat4 projection = glm::ortho(
-        0.0f,               // gauche
-        (float)800,         // droite
-        0.0f,               // bas
-        (float)600          // haut
+        0.0f,
+        (float)800,
+        0.0f,
+        (float)600
     );
 
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);

@@ -1,34 +1,36 @@
 #include "Player.hpp"
 #include "../Graphics/Renderer.hpp"
+#include "../Core/Config.hpp"
 #include <nlohmann/json.hpp>
 #include <thread>
 #include <iostream>
 
 using json = nlohmann::json;
 
-Player::Player(const char *scene, std::string &unit)
+Player::Player(const char *scene)
 {
-	auto anims = Renderer::getAnimations()[unit];
+	json data = Renderer::getData();
+
+	auto anims = Renderer::getAnimations()[data["scenes"][scene]["player"]["unit"]];
 	for (auto it = anims.begin(); it != anims.end(); it++)
 		animations[it->first] = it->second;
 
 	auto meshes = Renderer::getMeshes();
 	mesh = meshes["unit"];
 
-	json data = Renderer::getData();
-
-	auto player = data["scenes"][scene]["player"];
+	auto player = data["scenes"][scene]["player"]["position"];
 	position = glm::vec2(player["x"], player["y"]);
 
 	currentAnim = animations["idle"];
 	currentFrame = 0;
 
-	facing = "right";
+	// facing = "right";
+	reverseX = false;
 	guarding = false;
 	attacking = false;
 	moving = false;
 	displayMesh = false;
-	type = unit;
+	type = data["scenes"][scene]["player"]["unit"];
 
 	for (int i = 0; i < 4; i++)
 		directions[i] = false;
@@ -63,10 +65,11 @@ void Player::Draw()
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     glm::mat4 model = glm::mat4(1.0f);
-    float px = position.x * 800;
-	float py = position.y * 600 + currentAnim->frameHeight / 2.0f;
+    std::unordered_map config = getConfig();
+    float px = position.x * config["width"];
+	float py = position.y * config["height"] + currentAnim->frameHeight / 2.0f;
 	model = glm::translate(model, glm::vec3(px, py, 0.0f));
-	model = glm::scale(model, glm::vec3(facing == "left" ? -currentAnim->frameWidth : currentAnim->frameWidth, currentAnim->frameHeight, 1.0f));
+	model = glm::scale(model, glm::vec3(reverseX ? -currentAnim->frameWidth : currentAnim->frameWidth, currentAnim->frameHeight, 1.0f));
 	if (type == "knight")
 		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 1.0f));
 	glUniformMatrix4fv(Renderer::getModelLoc(), 1, GL_FALSE, &model[0][0]);
@@ -149,10 +152,8 @@ void Player::setMoving(Direction direction, bool move)
 
 	if (!guarding && !attacking)
 		currentAnim = animations["run"];
-	if (facing == "left" && direction == RIGHT && !directions[LEFT])
-		facing = "right";
-	if (facing == "right" && direction == LEFT && !directions[RIGHT])
-		facing = "left";
+	if ((reverseX && direction == RIGHT && !directions[LEFT]) || (!reverseX && direction == LEFT && !directions[RIGHT]))
+		reverseX = !reverseX;
 
 	// Trying to move in two opposite directions at once will stop the move
 	if (move && ((directions[LEFT] && directions[RIGHT]) || (directions[DOWN] && directions[UP])))
@@ -174,7 +175,7 @@ void Player::setMoving(Direction direction, bool move)
 	if (!move && ((direction == LEFT && directions[RIGHT]) || (direction == RIGHT && directions[LEFT]) || (direction == UP && directions[DOWN]) || (direction == DOWN && directions[UP])))
 	{
 		moving = true;
-		facing = direction == LEFT ? "right" : "left";
+		reverseX = direction == LEFT ? false : true;
 		if (!guarding)
 			currentAnim = animations["run"];
 	}
