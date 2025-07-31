@@ -28,6 +28,7 @@ void Engine::Run()
 
 void Engine::ShutDown() 
 { 
-	Renderer::Free();
+	Renderer::ShutDown();
+	Scene::ShutDown();
 	Window::Shutdown();
 }

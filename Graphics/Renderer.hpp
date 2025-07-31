@@ -6,19 +6,22 @@
 #include <nlohmann/json.hpp>
 #include "Shader.hpp"
 #include "Mesh.hpp"
-#include "Helpers.h"
+#include "../Helpers.h"
 
 using json = nlohmann::json;
 
 namespace Renderer
 {
 	void Init();
+    void ParseScene(const char *scene);
 	void Draw();
     void Free();
+    void ShutDown();
 
     std::unordered_map<std::string, Shader*> &getShaders();
     std::unordered_map<std::string, struct Texture*> &getTextures();
     std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> &getAnimations();
+    std::unordered_map<std::string, std::vector<struct Texture*>> &getDecors();
     std::unordered_map<std::string, Mesh*> &getMeshes();
 
 

@@ -15,6 +15,8 @@ static Player *player;
 
 void Scene::Load(const char *scene)
 {
+	Renderer::Free();
+	Renderer::ParseScene(scene);
 	if (!player)
 		player = new Player(scene);
 	else
@@ -30,6 +32,13 @@ void Scene::Load(const char *scene)
 void Scene::Update()
 {
 	player->Update();
+}
+
+void Scene::ShutDown()
+{
+	delete player;
+	// for (auto it = units.begin(); it != units.end(); it++)
+	// 	delete *it;
 }
 
 Player *Scene::getPlayer() { return player; }

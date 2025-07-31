@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "Mesh.hpp"
+#include "Graphics/Mesh.hpp"
 
 class Mesh;
 

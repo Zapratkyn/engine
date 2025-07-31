@@ -10,8 +10,8 @@ int main(int argc, char **argv)
 		std::cerr << "ERROR\nNo option available" << std::endl;
 		return 1;
 	}
-	
-	initConfig(800, 600);
+
+	initConfig(1920, 1080);
 
 	Engine engine;
 

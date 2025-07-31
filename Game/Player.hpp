@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <chrono>
 #include "../Graphics/Mesh.hpp"
-#include "../Graphics/Helpers.h"
+#include "../Helpers.h"
 
 class Player
 {

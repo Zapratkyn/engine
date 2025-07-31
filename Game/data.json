@@ -1,5 +1,5 @@
 {
-	"textures" : 
+	"animations_textures" : 
 	{
 		"warrior_idle" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Idle.png",
 		"warrior_run" : "Resources/Tiny Swords/Units/Black Units/Warrior/Warrior_Run.png",
@@ -12,8 +12,15 @@
 		"lancer_run" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Run.png",
 		"monk_idle" : "Resources/Tiny Swords/Units/Black Units/Monk/Idle.png",
 		"monk_run" : "Resources/Tiny Swords/Units/Black Units/Monk/Run.png",
-		"knight" : "Resources/brackeys_platformer_assets/sprites/knight.png",
-		"forest" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/mist-forest-background-preview.png"
+		"knight" : "Resources/brackeys_platformer_assets/sprites/knight.png"
+	},
+	"decors_textures" :
+	{
+		"mist_forest_back" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-back.png",
+		"mist_forest_back_trees" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-back-trees.png",
+		"mist_forest_rocks" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-rocks.png",
+		"mist_forest_tiles" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-tiles.png",
+		"mist_forest_tree" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-tree.png"
 	},
 	"animations" :
 	{
@@ -189,15 +196,32 @@
 			}
 		}
 	},
+	"decors" :
+	{
+		"mist_forest" :
+		{
+			"back" : 
+			[
+				"mist_forest_back",
+				"mist_forest_back_trees",	
+				"mist_forest_rocks",	
+				"mist_forest_tree"
+			],
+			"front" :
+			[
+				"mist_forest_tiles"
+			]
+		}
+	},
 	"scenes" :
 	{
 		"test" :
 		{
-			"background" : "forest",
+			"decor" : "mist_forest",
 			"player" : 
 			{ 
 				"unit" : "knight",
-				"position" : {"x" : 0.2, "y" : 0.275}
+				"position" : {"x" : 0.2, "y" : 0.2}
 			},
 			"units" :
 			{

@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <string>
-#include "Helpers.h"
+#include "../Helpers.h"
 
 class Mesh
 {
