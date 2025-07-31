@@ -1,8 +1,16 @@
 #include "Core/Engine.hpp"
 #include "Core/Config.hpp"
+#include <iostream>
 
-int main()
+int main(int argc, char **argv)
 {
+	(void)argv;
+	if (argc > 1)
+	{
+		std::cerr << "ERROR\nNo option available" << std::endl;
+		return 1;
+	}
+	
 	initConfig(800, 600);
 
 	Engine engine;
