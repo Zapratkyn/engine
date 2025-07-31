@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include <string>
 #include "Helpers.h"
 
 class Mesh
@@ -13,18 +14,18 @@ class Mesh
 
 public:
 
-	Mesh();
+	Mesh(float size);
 	~Mesh();
 
 	GLuint getVAO();
-	void UpdateUVs(const FrameUV& uvs);
+	void UpdateUVs(const struct FrameUV &uvs);
+	void setVertices(float size);
 
 private:
 
 	GLuint VAO;
 	GLuint VBOs[2];
 	GLuint EBO;
-	GLsizei indexCount;
 
 };
 

@@ -21,6 +21,7 @@ namespace Renderer
     std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> &getAnimations();
     std::unordered_map<std::string, Mesh*> &getMeshes();
 
+
     GLint getModelLoc();
     GLint getColorLoc();
     json getData();

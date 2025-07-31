@@ -5,8 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "stb_image.h"
+#include "Helpers.h"
 
-Mesh::Mesh()
+Mesh::Mesh(float size)
 {
 	glGenVertexArrays(1, &VAO);
     glGenBuffers(2, VBOs);
@@ -14,10 +15,10 @@ Mesh::Mesh()
 
     float vertices[] =
     {
-    	-0.5f, -0.5f,
-    	 0.5f, -0.5f,
-    	 0.5f,  0.5f,
-    	-0.5f,  0.5f
+    	-size, -size,
+    	 size, -size,
+    	 size,  size,
+    	-size,  size
     };
 
     float uvs[] = 
@@ -34,8 +35,6 @@ Mesh::Mesh()
     	2, 3, 0
     };
 
-    indexCount = 6;
-
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -47,9 +46,6 @@ Mesh::Mesh()
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    
-    
 }
 
 Mesh::~Mesh()
@@ -71,6 +67,20 @@ void Mesh::UpdateUVs(const FrameUV& uvs)
 
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(uv), uv);
+}
+
+void Mesh::setVertices(float size)
+{
+    float v[] =
+    {
+        -size, -size,
+         size, -size,
+         size,  size,
+        -size,  size
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(v), v);
 }
 
 GLuint Mesh::getVAO() { return VAO; }

@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 #include "../Game/Scene.hpp"
+#include "../Core/Config.hpp"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -44,11 +45,15 @@ std::unordered_map<std::string, Mesh*> &Renderer::getMeshes()
     return meshes;
 }
 
-static GLint modelLoc, colorLoc, projectionLoc;
+static GLint modelLoc, colorLoc, projectionLoc, scaleLoc, scrollOffsetLoc;
 static json data;
+struct Background background;
+glm::mat4 projection;
+
 
 struct Texture *ParseTexture(std::string &texName, std::string &texSource);
 struct Animation *ParseAnim(std::string &animName, json::iterator::reference &animData, std::unordered_map<std::string, struct Texture*> &textures);
+struct Background ParseBg(struct Texture *texture);
 
 void Renderer::Init()
 {
@@ -72,22 +77,27 @@ void Renderer::Init()
         }
     }
 	
-    getShaders()["main"] = new Shader("shader.vert", "shader.frag");
-    getShaders()["main"]->use();
-    modelLoc = glGetUniformLocation(getShaders()["main"]->ID, "model");
-    projectionLoc = glGetUniformLocation(getShaders()["main"]->ID, "projection");
-    colorLoc = glGetUniformLocation(getShaders()["main"]->ID, "backgroundColor");
+    getShaders()["unit"] = new Shader("unit.vert", "unit.frag");
+    getShaders()["background"] = new Shader("bg.vert", "bg.frag");
 
-    glm::mat4 projection = glm::ortho(
+    modelLoc = glGetUniformLocation(getShaders()["unit"]->ID, "model");
+    projectionLoc = glGetUniformLocation(getShaders()["unit"]->ID, "projection");
+    colorLoc = glGetUniformLocation(getShaders()["unit"]->ID, "backgroundColor");
+    scaleLoc = glGetUniformLocation(getShaders()["background"]->ID, "scale");
+    scrollOffsetLoc = glGetUniformLocation(getShaders()["background"]->ID, "scrollOffset");
+
+    projection = glm::ortho(
         0.0f,
         (float)800,
         0.0f,
         (float)600
     );
 
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+    getMeshes()["unit"] = new Mesh(0.5f);
+    getMeshes()["background"] = new Mesh(1.0f);
 
-    getMeshes()["unit"] = new Mesh;
+    std::string bgName(data["scenes"]["test"]["background"]);
+    background = ParseBg(getTextures()[bgName]);
 }
 
 struct Texture *ParseTexture(std::string &texName, std::string &texSource)
@@ -148,11 +158,31 @@ struct Animation *ParseAnim(std::string &animName, json::iterator::reference &an
     return anim;
 }
 
+struct Background ParseBg(struct Texture *texture)
+{
+    struct Background bg;
+    bg.texture = texture;
+
+    std::unordered_map config = getConfig();
+    bg.scaleX = (float)texture->width / texture->height;
+    bg.scaleY = (float)config["width"] / config["height"];
+
+    return bg;
+}
+
 void Renderer::Draw()
 {
-    auto background = data["scenes"][Scene::getSceneName()]["background"];
-	glClearColor(background["r"], background["g"], background["b"], background["w"]);
-    glClear(GL_COLOR_BUFFER_BIT);
+    // Drawing background
+    getShaders()["background"]->use();
+    glUniform2f(scrollOffsetLoc, 0, -0.15);
+    glUniform2f(scaleLoc, background.scaleX, background.scaleY);
+    glBindTexture(GL_TEXTURE_2D, background.texture->texture);
+    glBindVertexArray(getMeshes()["background"]->getVAO());
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Drawing units
+    getShaders()["unit"]->use();
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
     Scene::getPlayer()->Draw();
 }
 

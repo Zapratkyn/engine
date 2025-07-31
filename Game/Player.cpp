@@ -11,7 +11,8 @@ Player::Player(const char *scene)
 {
 	json data = Renderer::getData();
 
-	auto anims = Renderer::getAnimations()[data["scenes"][scene]["player"]["unit"]];
+	type = data["scenes"][scene]["player"]["unit"];
+	auto anims = Renderer::getAnimations()[type];
 	for (auto it = anims.begin(); it != anims.end(); it++)
 		animations[it->first] = it->second;
 
@@ -24,13 +25,11 @@ Player::Player(const char *scene)
 	currentAnim = animations["idle"];
 	currentFrame = 0;
 
-	// facing = "right";
 	reverseX = false;
 	guarding = false;
 	attacking = false;
 	moving = false;
 	displayMesh = false;
-	type = data["scenes"][scene]["player"]["unit"];
 
 	for (int i = 0; i < 4; i++)
 		directions[i] = false;
@@ -45,7 +44,7 @@ void Player::setPosition(float x, float y)
 void Player::StartAnimation() 
 { 
 	currentFrame = 0;
-	lastUpdate = std::chrono::steady_clock::now(); 
+	lastUpdate = std::chrono::steady_clock::now();
 	mesh->UpdateUVs(currentAnim->frames[currentFrame]);
 }
 

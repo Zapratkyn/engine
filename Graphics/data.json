@@ -12,7 +12,8 @@
 		"lancer_run" : "Resources/Tiny Swords/Units/Black Units/Lancer/Lancer_Run.png",
 		"monk_idle" : "Resources/Tiny Swords/Units/Black Units/Monk/Idle.png",
 		"monk_run" : "Resources/Tiny Swords/Units/Black Units/Monk/Run.png",
-		"knight" : "Resources/brackeys_platformer_assets/sprites/knight.png"
+		"knight" : "Resources/brackeys_platformer_assets/sprites/knight.png",
+		"forest" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/mist-forest-background-preview.png"
 	},
 	"animations" :
 	{
@@ -192,11 +193,11 @@
 	{
 		"test" :
 		{
-			"background" : { "r" : 0.8, "g" : 0.8, "b" : 0.8, "w" : 1.0 },
+			"background" : "forest",
 			"player" : 
 			{ 
 				"unit" : "knight",
-				"position" : {"x" : 0.2, "y" : 0.5}
+				"position" : {"x" : 0.2, "y" : 0.275}
 			},
 			"units" :
 			{

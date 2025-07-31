@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include "Mesh.hpp"
+
+class Mesh;
 
 struct Texture
 {
@@ -30,6 +33,12 @@ struct Terrain
 {
     std::string name;
     GLuint texture;
+};
+
+struct Background
+{
+    struct Texture *texture;
+    float scaleX, scaleY;
 };
 
 enum Direction
