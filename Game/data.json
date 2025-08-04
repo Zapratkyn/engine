@@ -20,7 +20,11 @@
 		"mist_forest_back_trees" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-back-trees.png",
 		"mist_forest_rocks" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-rocks.png",
 		"mist_forest_tiles" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-tiles.png",
-		"mist_forest_tree" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-tree.png"
+		"mist_forest_tree" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/mist-forest-background/layers/mist-forest-background-tree.png",
+		"bulkhead-walls-back" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/bulkhead-walls/v1/layers/bulkhead-walls-back.png",
+		"bulkhead-walls-pipes" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/bulkhead-walls/v1/layers/bulkhead-walls-pipes.png",
+		"bulkhead-walls-platform" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/bulkhead-walls/v1/layers/bulkhead-walls-platform.png",
+		"cols" : "Resources/Legacy Collection/Legacy Collection/Assets/Environments/bulkhead-walls/v1/layers/cols.png"
 	},
 	"animations" :
 	{
@@ -201,27 +205,46 @@
 		"mist_forest" :
 		{
 			"back" : 
-			[
-				"mist_forest_back",
-				"mist_forest_back_trees",	
-				"mist_forest_rocks",	
-				"mist_forest_tree"
-			],
+			{
+				"mist_forest_back" : { "x" : 1.0, "y" : 1.0 },
+				"mist_forest_back_trees" : { "x" : 0.5, "y" : 1.0 },	
+				"mist_forest_rocks" : { "x" : 0.5, "y" : 1.0 },	
+				"mist_forest_tree" : { "x" : 0.5, "y" : 1.0 }
+			},
 			"front" :
 			[
 				"mist_forest_tiles"
 			]
+		},
+		"bulkhead_walls" : 
+		{
+			"back" :
+			{
+				"bulkhead-walls-back" : { "x" : 1.0, "y" : 1.0 },
+				"bulkhead-walls-pipes" : { "x" : 1.0, "y" : 1.0 },	
+				"bulkhead-walls-platform" : { "x" : 1.0, "y" : 1.0 },	
+				"cols" : { "x" : 1.0, "y" : 1.0 }
+			},
+			"front" : []
 		}
+	},
+	"scales" :
+	{
+		"warrior" : { "x" : 1.0, "y" : 1.0 },
+		"monk" : { "x" : 1.0, "y" : 1.0 },
+		"lancer" : { "x" : 1.0, "y" : 1.0 },
+		"archer" : { "x" : 1.0, "y" : 1.0 },
+		"knight" : { "x" : 5.0, "y" : 5.0 }
 	},
 	"scenes" :
 	{
 		"test" :
 		{
-			"decor" : "mist_forest",
+			"decor" : "bulkhead_walls",
 			"player" : 
 			{ 
 				"unit" : "knight",
-				"position" : {"x" : 0.2, "y" : 0.2}
+				"position" : { "x" : 0.2, "y" : 0.3 }
 			},
 			"units" :
 			{

@@ -45,9 +45,9 @@ std::unordered_map<std::string, struct Texture*> &Renderer::getTextures()
 "back" for background, aesthetic only
 "front" for the tiles. Those need collision detection
 */
-std::unordered_map<std::string, std::vector<struct Texture*>> &Renderer::getDecors()
+std::unordered_map<std::string, std::vector<struct Background*>> &Renderer::getDecors()
 {
-    static std::unordered_map<std::string, std::vector<struct Texture*>> decors;
+    static std::unordered_map<std::string, std::vector<struct Background*>> decors;
     return decors;
 }
 
@@ -62,13 +62,17 @@ std::unordered_map<std::string, Mesh*> &Renderer::getMeshes()
 }
 
 // Uniforms
-static GLint modelLoc, colorLoc, projectionLoc, scaleLoc, scrollOffsetLoc;
+static GLint modelLoc, colorLoc, projectionLoc, scaleLoc;
+
+// Parsed data.json
 static json data;
+
+// Projection matrix for the units drawing
 glm::mat4 projection;
 
 
 struct Texture *ParseTexture(std::string texName, std::string texSource, std::string type);
-struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, std::unordered_map<std::string, struct Texture*> &textures);
+struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, struct Texture *texture);
 
 void Renderer::Init()
 {
@@ -82,13 +86,26 @@ void Renderer::Init()
     projectionLoc = glGetUniformLocation(getShaders()["unit"]->ID, "projection");
     colorLoc = glGetUniformLocation(getShaders()["unit"]->ID, "backgroundColor");
     scaleLoc = glGetUniformLocation(getShaders()["background"]->ID, "scale");
-    scrollOffsetLoc = glGetUniformLocation(getShaders()["background"]->ID, "scrollOffset");
+    // scrollOffsetLoc = glGetUniformLocation(getShaders()["background"]->ID, "scrollOffset");
+    // spacingFactorLoc = glGetUniformLocation(getShaders()["background"]->ID, "spacingFactor");
+    // patternWidthLoc = glGetUniformLocation(getShaders()["background"]->ID, "patternWidth");
 
     auto config = getConfig();
     projection = glm::ortho(0.0f, (float)config["width"], 0.0f, (float)config["height"]);
 
-    getMeshes()["unit"] = new Mesh(0.5f);
-    getMeshes()["background"] = new Mesh(1.0f);
+    getMeshes()["unit"] = new Mesh;
+    getMeshes()["background"] = new Mesh;
+
+    float array1[] = { -0.5f, -0.5f, 0.5f, -0.5, 0.5f, 0.5f, -0.5f, 0.5f };
+    getMeshes()["unit"]->SetArray(array1, sizeof(array1), 0);
+    // float array2[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
+    // getMeshes()["unit"]->SetArray(array2, sizeof(array2), 1);
+    // float array3[] = { -50.0f, -0.8f, 50.0f, -0.8f, 50.0f, 0.8f, -50.0f, 0.8f };
+    float array3[] = { -1.0f, -0.8f, 1.0f, -0.8f, 1.0f, 0.8f, -1.0f, 0.8f };
+    getMeshes()["background"]->SetArray(array3, sizeof(array3), 0);
+    // float array4[] = { 0.0f, 0.0f, 10.0f, 0.0f, 10.0f, 1.0f, 0.0f, 1.0f };
+    // float array4[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
+    // getMeshes()["background"]->SetArray(array4, sizeof(array4), 1);
 }
 
 void Renderer::ParseScene(const char *scene)
@@ -96,86 +113,50 @@ void Renderer::ParseScene(const char *scene)
     // We load only the textures we need for the scene
 
     auto sceneToLoad = data["scenes"][scene];
+    std::vector<std::string> unitsToLoad{sceneToLoad["player"]["unit"]};
 
-    std::vector<std::string> texturesToLoad;
-    std::vector<std::string> back;
-
-    texturesToLoad.push_back(sceneToLoad["player"]["unit"]);
-
-    /*
-    For each unit type in the scene, we get the name
-    Then, we use the unit's name to iterate through its animations and push those names in the list
-    We avoid duplicates thanks to std::find
-    */
-    for (auto &[unitName, unitData] : sceneToLoad["units"].items())
+    for (auto& [unitName, unitData] : sceneToLoad["units"].items())
     {
-        for (auto& [uName, uData] : data["animations"][unitName].items())
+        if (std::find(unitsToLoad.begin(), unitsToLoad.end(), unitName) == unitsToLoad.end())
+            unitsToLoad.push_back(unitName);
+    }
+
+    for (auto& unitName : unitsToLoad)
+    {
+        if (getAnimations().find(unitName) != getAnimations().end())
+            continue;
+        std::unordered_map<std::string, struct Texture*> associations;
+        for (auto& [animName, animData] : data["animations"][unitName].items())
         {
-            std::string texName(uData["texture"]);
-            if (std::find(texturesToLoad.begin(), texturesToLoad.end(), texName) == texturesToLoad.end())
-                texturesToLoad.push_back(texName);
+            std::string texName(animData["texture"]);
+            auto it = associations.find(texName);
+            if (it != associations.end())
+                getAnimations()[unitName][animName] = ParseAnim(animName, animData, it->second);
+            else
+            {
+                struct Texture *newTex = ParseTexture(texName, data["animations_textures"][texName], "animation");
+                getTextures()[texName] = newTex; // Keeping texture for future scenes
+                associations[texName] = newTex;
+                getAnimations()[unitName][animName] = ParseAnim(animName, animData, newTex);
+            }
         }
     }
 
-    /*
-    Get the name of every layer of the scene's decor
-    We start with the background. Those layers don't need collision detection
-    */
-    for (const auto &decorName : data["decors"][sceneToLoad["decor"]]["back"])
+    for (auto& [bgName, bgData] : data["decors"][sceneToLoad["decor"]]["back"].items())
     {
-        texturesToLoad.push_back(decorName);
-        back.push_back(decorName);
+        struct Background *bg = new Background;
+        bg->scaleX = bgData["x"];
+        bg->scaleY = bgData["y"];
+        std::string texName(bgName);
+        bg->texture = ParseTexture(texName, data["decors_textures"][texName], "decor");
+        getDecors()["back"].push_back(bg);
     }
 
-    // Then the foreground. This needs collision detection
-    for (const auto &decorName : data["decors"][sceneToLoad["decor"]]["front"])
-        texturesToLoad.push_back(decorName);
-
-    // Parsing all the animations, according to the list we made before
-    for (auto& [texName, texSource] : data["animations_textures"].items())
-    {
-        if (std::find(texturesToLoad.begin(), texturesToLoad.end(), texName) != texturesToLoad.end())
-            getTextures()[texName] = ParseTexture(texName, texSource, "animation");
-    }
-
-    /*
-    Parsing all the decors, according to the list we made before
-    Putting the textures in the correct vector, depending on the need of collision detection
-    Erasing each parsed texture from the list to avoid duplicate
-    */
-    for (auto& [texName, texSource] : data["decors_textures"].items())
-    {
-        auto it = std::find(texturesToLoad.begin(), texturesToLoad.end(), texName);
-        if (it == texturesToLoad.end())
-            continue;
-        auto itBack = std::find(back.begin(), back.end(), texName);
-        if (itBack != back.end())
-        {
-            getDecors()["back"].push_back(ParseTexture(texName, texSource, "decor"));
-            itBack = back.erase(itBack);
-        }
-        else
-            getDecors()["front"].push_back(ParseTexture(texName, texSource, "decor"));
-        it = texturesToLoad.erase(it);
-    }
-
-    /*
-    Parsing all the animations, according to the list we made before
-    Animations are organized in a map of maps
-    Each unit is an element in the map of maps
-    Each unit has a map of animations
-    Erasing each parsed animation from the list to avoid duplicate
-    */
-    for (auto& [unitName, unitData] : data["animations"].items())
-    {
-        auto it = std::find(texturesToLoad.begin(), texturesToLoad.end(), unitName);
-        if (it == texturesToLoad.end())
-            continue;
-        getAnimations().try_emplace(unitName);
-        for (auto& [animName, animData] : unitData.items())
-            getAnimations()[unitName][animName] = ParseAnim(animName, animData, getTextures());
-        it = texturesToLoad.erase(it);
-    }
+    // for (auto& bgName : data["decors"][sceneToLoad["decor"]]["front"])
+    // {
+    //     std::string texName(bgName);
+    //     getDecors()["front"].push_back(ParseTexture(texName, data["decors_textures"][texName], "decor"));
+    // }
 }
 
 struct Texture *ParseTexture(std::string texName, std::string texSource, std::string type)
@@ -208,13 +189,12 @@ struct Texture *ParseTexture(std::string texName, std::string texSource, std::st
     return tex;
 }
 
-struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, std::unordered_map<std::string, struct Texture*> &textures)
+struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, struct Texture *texture)
 {
     struct Animation *anim = new struct Animation;
-    std::string texSource(animData["texture"]);
 
     anim->name = animName;
-    anim->texture = textures[texSource];
+    anim->texture = texture;
     anim->frameWidth = animData["frameWidth"];
     anim->frameHeight = animData["frameHeight"];
     anim->frameTime = animData["frameTime"];
@@ -241,18 +221,22 @@ struct Animation *ParseAnim(std::string animName, json::iterator::reference &ani
 
 void Renderer::Draw()
 {
-    // DEPRECATED
-    // Drawing background
-    // getShaders()["background"]->use();
-    // glUniform2f(scrollOffsetLoc, 0, -0.15);
-    // glUniform2f(scaleLoc, background.scaleX, background.scaleY);
-    // glBindTexture(GL_TEXTURE_2D, background.texture->texture);
-    // glBindVertexArray(getMeshes()["background"]->getVAO());
-    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    // Back to simple color background until I make the background properly using all the layers loaded in the getDecors() vector
-    glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+    // Black bands above and below the image
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // Drawing decor
+    getShaders()["background"]->use();
+    glBindVertexArray(getMeshes()["background"]->getVAO());
+    auto bgs = getDecors()["back"];
+    for (size_t i = 0; i < bgs.size(); i++)
+    {
+        auto bg = bgs[i];
+        glUniform2f(scaleLoc, bg->scaleX, bg->scaleY);
+        glBindTexture(GL_TEXTURE_2D, bg->texture->texture);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
 
     // Drawing units
     getShaders()["unit"]->use();
@@ -260,6 +244,9 @@ void Renderer::Draw()
     Scene::getPlayer()->Draw();
 }
 
+// Free current scene, followed by parsing a new one
+// TODO : Prevent deletion of assets needed bby the new scene
+// void Renderer::Free(const char *newScene)
 void Renderer::Free()
 {
     for (auto it = getAnimations().begin(); it != getAnimations().end(); it++)
@@ -291,8 +278,11 @@ void Renderer::ShutDown()
 
     for (auto it = getDecors().begin(); it != getDecors().end(); it++)
     {
-        for (auto tex = it->second.begin(); tex != it->second.end(); tex++)
-            delete *tex;
+        for (auto bg : it->second)
+        {
+            delete bg->texture;
+            delete bg;
+        }
     }
 
     for (auto it = getTextures().begin(); it != getTextures().end(); it++)

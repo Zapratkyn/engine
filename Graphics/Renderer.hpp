@@ -21,7 +21,7 @@ namespace Renderer
     std::unordered_map<std::string, Shader*> &getShaders();
     std::unordered_map<std::string, struct Texture*> &getTextures();
     std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> &getAnimations();
-    std::unordered_map<std::string, std::vector<struct Texture*>> &getDecors();
+    std::unordered_map<std::string, std::vector<struct Background*>> &getDecors();
     std::unordered_map<std::string, Mesh*> &getMeshes();
 
 

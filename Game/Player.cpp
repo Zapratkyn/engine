@@ -45,7 +45,7 @@ void Player::StartAnimation()
 { 
 	currentFrame = 0;
 	lastUpdate = std::chrono::steady_clock::now();
-	mesh->UpdateUVs(currentAnim->frames[currentFrame]);
+	mesh->UpdateUVs(currentAnim->frames[0]);
 }
 
 void Player::Draw()
@@ -64,13 +64,13 @@ void Player::Draw()
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     glm::mat4 model = glm::mat4(1.0f);
-    std::unordered_map config = getConfig();
+    auto config = getConfig();
     float px = position.x * config["width"];
 	float py = position.y * config["height"] + currentAnim->frameHeight / 2.0f;
 	model = glm::translate(model, glm::vec3(px, py, 0.0f));
 	model = glm::scale(model, glm::vec3(reverseX ? -currentAnim->frameWidth : currentAnim->frameWidth, currentAnim->frameHeight, 1.0f));
-	if (type == "knight")
-		model = glm::scale(model, glm::vec3(5.0f, 5.0f, 1.0f));
+	auto scale = Renderer::getData()["scales"][type];
+	model = glm::scale(model, glm::vec3(scale["x"], scale["y"], 1.0f));
 	glUniformMatrix4fv(Renderer::getModelLoc(), 1, GL_FALSE, &model[0][0]);
 
     if (!displayMesh)
@@ -85,15 +85,13 @@ void Player::Draw()
 
 	   	GLint modelLoc = Renderer::getModelLoc();
 	   	GLint colorLoc = Renderer::getColorLoc();
-	    // 1. Dessiner un quad coloré (même géométrie que le mesh, mais un peu plus grand)
 	    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
-	    glUniform4f(colorLoc, 0.1f, 0.1f, 0.1f, 1.0f); // fond sombre
-	    glBindTexture(GL_TEXTURE_2D, 0);              // pas de texture
+	    glUniform4f(colorLoc, 0.1f, 0.1f, 0.1f, 1.0f);
+	    glBindTexture(GL_TEXTURE_2D, 0);
 	    glBindVertexArray(mesh->getVAO());
 	    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	    // 2. Dessiner ensuite le mesh animé (avec texture)
-	    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.01f)); // léger décalage z
+	    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.01f));
 	    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
 	    glBindTexture(GL_TEXTURE_2D, currentAnim->texture->texture);
 	    glBindVertexArray(mesh->getVAO());

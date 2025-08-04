@@ -14,12 +14,12 @@ class Mesh
 
 public:
 
-	Mesh(float size);
+	Mesh();
 	~Mesh();
 
 	GLuint getVAO();
 	void UpdateUVs(const struct FrameUV &uvs);
-	void setVertices(float size);
+	void SetArray(const float array[], int size, int VBO);
 
 private:
 

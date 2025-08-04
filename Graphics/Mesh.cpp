@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "stb_image.h"
 
-Mesh::Mesh(float size)
+Mesh::Mesh()
 {
 	glGenVertexArrays(1, &VAO);
     glGenBuffers(2, VBOs);
@@ -14,10 +14,10 @@ Mesh::Mesh(float size)
 
     float vertices[] =
     {
-    	-size, -size,
-    	 size, -size,
-    	 size,  size,
-    	-size,  size
+    	0.0f, 0.0f,
+    	0.0f, 0.0f,
+    	0.0f, 0.0f,
+    	0.0f, 0.0f
     };
 
     float uvs[] = 
@@ -68,18 +68,10 @@ void Mesh::UpdateUVs(const FrameUV& uvs)
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(uv), uv);
 }
 
-void Mesh::setVertices(float size)
+void Mesh::SetArray(const float array[], int size, int VBO)
 {
-    float v[] =
-    {
-        -size, -size,
-         size, -size,
-         size,  size,
-        -size,  size
-    };
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(v), v);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[VBO]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, array);
 }
 
 GLuint Mesh::getVAO() { return VAO; }
