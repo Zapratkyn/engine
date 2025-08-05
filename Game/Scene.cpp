@@ -1,6 +1,7 @@
 #include "Scene.hpp"
 #include "../Graphics/Renderer.hpp"
 #include <nlohmann/json.hpp>
+#include <iostream>
 
 using json = nlohmann::json;
 
@@ -10,20 +11,37 @@ std::string &Scene::getSceneName()
 	return sceneName;
 }
 
-static Player *player;
-// static std::vector<Unit*> units;
-
-void Scene::Load(const char *scene)
+std::unordered_map<std::string, struct Exit> &Scene::getExits()
 {
-	Renderer::Free();
+	static std::unordered_map<std::string, struct Exit> exits;
+	return exits;
+}
+
+// std::vector<Unit*> &Scene::getUnits()
+// {
+// 	static std::vector<Unit*> units;
+// 	return units;
+// }
+
+static Player *player;
+
+void Scene::Load(std::string scene)
+{
+	Renderer::Free(scene);
 	Renderer::ParseScene(scene);
+	json data = Renderer::getData();
 	if (!player)
-		player = new Player(scene);
-	else
+		player = new Player();
+
+	getExits().clear();
+
+	for (auto& [name, data] : data["scenes"][scene]["exits"].items())
 	{
-		json data = Renderer::getData();
-		auto pl = data["scenes"][scene]["player"]["position"];
-		player->setPosition(pl["x"], pl["y"]);
+		struct Exit newExit;
+		newExit.x = data["x"];
+		newExit.y = data["y"];
+		newExit.direction = data["direction"];
+		getExits()[name] = newExit;
 	}
 
 	getSceneName() = scene;

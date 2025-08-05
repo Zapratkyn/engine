@@ -7,15 +7,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <chrono>
+#include <nlohmann/json.hpp>
 #include "../Graphics/Mesh.hpp"
 #include "../Helpers.h"
+
+using json = nlohmann::json;
 
 class Player
 {
 
 public:
 
-	Player(const char *scene);
+	Player();
 	void setPosition(float x, float y);
 	void Update();
 	void Draw();
@@ -26,6 +29,7 @@ public:
 	void ToggleMeshDisplay();
 	void Attack(std::string attack);
 	std::string getType();
+	json getData();
 
 private:
 

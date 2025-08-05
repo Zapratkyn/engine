@@ -13,13 +13,12 @@ using json = nlohmann::json;
 namespace Renderer
 {
 	void Init();
-    void ParseScene(const char *scene);
+    void ParseScene(std::string scene);
 	void Draw();
-    void Free();
+    void Free(std::string newScene);
     void ShutDown();
 
     std::unordered_map<std::string, Shader*> &getShaders();
-    std::unordered_map<std::string, struct Texture*> &getTextures();
     std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> &getAnimations();
     std::unordered_map<std::string, std::vector<struct Background*>> &getDecors();
     std::unordered_map<std::string, Mesh*> &getMeshes();

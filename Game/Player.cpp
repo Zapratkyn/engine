@@ -1,17 +1,18 @@
 #include "Player.hpp"
+#include "Scene.hpp"
 #include "../Graphics/Renderer.hpp"
 #include "../Core/Config.hpp"
 #include <nlohmann/json.hpp>
 #include <thread>
 #include <iostream>
+#include <fstream>
 
-using json = nlohmann::json;
-
-Player::Player(const char *scene)
+Player::Player()
 {
-	json data = Renderer::getData();
+	std::ifstream file("Game/player.json");
+    json playerData = json::parse(file);
 
-	type = data["scenes"][scene]["player"]["unit"];
+	type = playerData["unit"];
 	auto anims = Renderer::getAnimations()[type];
 	for (auto it = anims.begin(); it != anims.end(); it++)
 		animations[it->first] = it->second;
@@ -19,8 +20,8 @@ Player::Player(const char *scene)
 	auto meshes = Renderer::getMeshes();
 	mesh = meshes["unit"];
 
-	auto player = data["scenes"][scene]["player"]["position"];
-	position = glm::vec2(player["x"], player["y"]);
+	auto startPosition = playerData["startPosition"];
+	position = glm::vec2(startPosition["x"], startPosition["y"]);
 
 	currentAnim = animations["idle"];
 	currentFrame = 0;
@@ -116,6 +117,31 @@ void Player::Update()
 		attacking = false;
 		currentAnim = animations[moving ? "run" : "idle"];
 		StartAnimation();
+	}
+
+	auto exits = Scene::getExits();
+	for (auto& [name, data] : exits)
+	{
+		if (data.direction == "right" && position.x >= data.x)
+		{
+			Scene::Load(name);
+			position.x = -0.02f;
+		}
+		else if (data.direction == "left" && position.x <= data.x)
+		{
+			Scene::Load(name);
+			position.x = 1.02f;
+		}
+		else if (data.direction == "up" && position.y >= data.y)
+		{
+			Scene::Load(name);
+			position.y = -0.1f;
+		}
+		else if (data.direction == "down" && position.y <= data.y)
+		{
+			Scene::Load(name);
+			position.y = 1.1f;
+		}
 	}
 }
 

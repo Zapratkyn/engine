@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "Graphics/Mesh.hpp"
 
 class Mesh;
@@ -22,7 +23,7 @@ struct FrameUV
 struct Animation
 {
     std::string name;
-    struct Texture *texture;
+    std::shared_ptr<struct Texture> texture;
     std::vector<FrameUV> frames;
     int frameWidth, frameHeight;
     int frameCount; 
@@ -37,8 +38,14 @@ struct Terrain
 
 struct Background
 {
-    struct Texture *texture;
+    std::shared_ptr<Texture> texture;
     float scaleX, scaleY;
+};
+
+struct Exit
+{
+    float x, y;
+    std::string direction;
 };
 
 enum Direction
@@ -48,5 +55,6 @@ enum Direction
     LEFT,
     UP
 };
+
 
 #endif

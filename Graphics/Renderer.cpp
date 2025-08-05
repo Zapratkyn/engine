@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 #include "../Game/Scene.hpp"
+#include "../Game/Player.hpp"
 #include "../Core/Config.hpp"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -8,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <memory>
 #include "stb_image.h"
 
 
@@ -32,12 +34,6 @@ std::unordered_map<std::string, std::unordered_map<std::string, struct Animation
 {
     static std::unordered_map<std::string, std::unordered_map<std::string, struct Animation*>> animations;
     return animations;
-}
-
-std::unordered_map<std::string, struct Texture*> &Renderer::getTextures()
-{
-    static std::unordered_map<std::string, struct Texture*> textures;
-    return textures;
 }
 
 /*
@@ -70,9 +66,11 @@ static json data;
 // Projection matrix for the units drawing
 glm::mat4 projection;
 
+std::string decorName;
 
-struct Texture *ParseTexture(std::string texName, std::string texSource, std::string type);
-struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, struct Texture *texture);
+
+std::shared_ptr<Texture> ParseTexture(std::string texName, std::string texSource, std::string type);
+struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, std::shared_ptr<Texture> texture);
 
 void Renderer::Init()
 {
@@ -108,12 +106,12 @@ void Renderer::Init()
     // getMeshes()["background"]->SetArray(array4, sizeof(array4), 1);
 }
 
-void Renderer::ParseScene(const char *scene)
+void Renderer::ParseScene(std::string scene)
 {
     // We load only the textures we need for the scene
 
     auto sceneToLoad = data["scenes"][scene];
-    std::vector<std::string> unitsToLoad{sceneToLoad["player"]["unit"]};
+    std::vector<std::string> unitsToLoad{data["player"]};
 
     for (auto& [unitName, unitData] : sceneToLoad["units"].items())
     {
@@ -125,7 +123,7 @@ void Renderer::ParseScene(const char *scene)
     {
         if (getAnimations().find(unitName) != getAnimations().end())
             continue;
-        std::unordered_map<std::string, struct Texture*> associations;
+        std::unordered_map<std::string, std::shared_ptr<Texture>> associations;
         for (auto& [animName, animData] : data["animations"][unitName].items())
         {
             std::string texName(animData["texture"]);
@@ -134,34 +132,32 @@ void Renderer::ParseScene(const char *scene)
                 getAnimations()[unitName][animName] = ParseAnim(animName, animData, it->second);
             else
             {
-                struct Texture *newTex = ParseTexture(texName, data["animations_textures"][texName], "animation");
-                getTextures()[texName] = newTex; // Keeping texture for future scenes
+                std::shared_ptr<Texture> newTex = ParseTexture(texName, data["animations_textures"][texName], "animation");
                 associations[texName] = newTex;
                 getAnimations()[unitName][animName] = ParseAnim(animName, animData, newTex);
             }
         }
     }
 
-    for (auto& [bgName, bgData] : data["decors"][sceneToLoad["decor"]]["back"].items())
+    if (decorName != sceneToLoad["decor"])
     {
-        struct Background *bg = new Background;
-        bg->scaleX = bgData["x"];
-        bg->scaleY = bgData["y"];
-        std::string texName(bgName);
-        bg->texture = ParseTexture(texName, data["decors_textures"][texName], "decor");
-        getDecors()["back"].push_back(bg);
-    }
+        decorName = sceneToLoad["decor"];
 
-    // for (auto& bgName : data["decors"][sceneToLoad["decor"]]["front"])
-    // {
-    //     std::string texName(bgName);
-    //     getDecors()["front"].push_back(ParseTexture(texName, data["decors_textures"][texName], "decor"));
-    // }
+        for (auto& [bgName, bgData] : data["decors"][sceneToLoad["decor"]]["back"].items())
+        {
+            struct Background *bg = new Background;
+            bg->scaleX = bgData["x"];
+            bg->scaleY = bgData["y"];
+            std::string texName(bgName);
+            bg->texture = ParseTexture(texName, data["decors_textures"][texName], "decor");
+            getDecors()["back"].push_back(bg);
+        }
+    }
 }
 
-struct Texture *ParseTexture(std::string texName, std::string texSource, std::string type)
+std::shared_ptr<Texture> ParseTexture(std::string texName, std::string texSource, std::string type)
 {
-    struct Texture *tex = new struct Texture;
+    std::shared_ptr<Texture> tex = std::make_shared<Texture>();
     int channels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char* imageData = stbi_load(texSource.c_str(), &tex->width, &tex->height, &channels, STBI_rgb_alpha);
@@ -189,7 +185,7 @@ struct Texture *ParseTexture(std::string texName, std::string texSource, std::st
     return tex;
 }
 
-struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, struct Texture *texture)
+struct Animation *ParseAnim(std::string animName, json::iterator::reference &animData, std::shared_ptr<Texture> texture)
 {
     struct Animation *anim = new struct Animation;
 
@@ -245,23 +241,35 @@ void Renderer::Draw()
 }
 
 // Free current scene, followed by parsing a new one
-// TODO : Prevent deletion of assets needed bby the new scene
-// void Renderer::Free(const char *newScene)
-void Renderer::Free()
+void Renderer::Free(std::string newScene)
 {
-    for (auto it = getAnimations().begin(); it != getAnimations().end(); it++)
+    std::vector<std::string> toKeep{data["player"]};
+
+    for (auto& [uName, uData] : data["scenes"][newScene]["units"].items())
+        toKeep.push_back(uName);
+    
+    for (auto it = getAnimations().begin(); it != getAnimations().end();)
     {
+        if (std::find(toKeep.begin(), toKeep.end(), it->first) != toKeep.end())
+        {
+            it++;
+            continue;
+        }
         for (auto anim = it->second.begin(); anim != it->second.end(); anim++)
             delete anim->second;
+        it->second.clear();
+        it = getAnimations().erase(it);
     }
-
-    for (auto it = getTextures().begin(); it != getTextures().end(); it++)
-        delete it->second;
-
-    for (auto it = getDecors().begin(); it != getDecors().end(); it++)
+    
+    if (data["scenes"][newScene]["decor"] != decorName)
     {
-        for (auto tex = it->second.begin(); tex != it->second.end(); tex++)
-            delete *tex;
+        for (auto it = getDecors().begin(); it != getDecors().end(); it++)
+        {
+            for (auto layer = it->second.begin(); layer != it->second.end(); layer++)
+                delete *layer;
+            it->second.clear();
+        }
+        getDecors().clear();
     }
 }
 
@@ -278,15 +286,9 @@ void Renderer::ShutDown()
 
     for (auto it = getDecors().begin(); it != getDecors().end(); it++)
     {
-        for (auto bg : it->second)
-        {
-            delete bg->texture;
-            delete bg;
-        }
+        for (auto layer = it->second.begin(); layer != it->second.end(); layer++)
+            delete *layer;
     }
-
-    for (auto it = getTextures().begin(); it != getTextures().end(); it++)
-        delete it->second;
 
     for (auto it = getMeshes().begin(); it != getMeshes().end(); it++)
         delete it->second;
